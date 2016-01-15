@@ -1,0 +1,20 @@
+
+
+# Several config files should never be committed
+config/app_config.yml
+config/blacklight.yml
+config/solr.yml
+config/database.yml
+config/secrets.yml
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore the default SQLite database.
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Ignore all logfiles and tempfiles.
+/log/*
+!/log/.keep
+/tmp
