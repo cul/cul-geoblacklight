@@ -18,3 +18,8 @@ config/secrets.yml
 /log/*
 !/log/.keep
 /tmp
+
+# don't put metadata into repo
+/tmp/metadata
+
+

@@ -1,0 +1,124 @@
+GeoBlacklight Project
+
+Project Management
+- Wiki documentation - which "space"?  new "space"?  'Spatial'?
+- JIRA tracking, LIBSYS project, parent ticket, child tickets
+- Discuss timeframe and staffing, clarify expectations
+- CLIO integration - out of scope
+- GeoServer, et.al. - out of scope
+- Evaluation phase - first, explore functionality
+- Document minimal changes before public parallel to OGP
+
+Software Managment
+- Branding - pick name early, stick with it
+- Setup three Rails environments, Dev, Test, and Prod
+- Setup Solr environments - At least two, maybe three
+- Integrate with CAS for authenticated access
+- Determine levels of access - auth/unauth, or by affil, or by on/off campus?
+- Skinning - minor
+- Functionality - as-is, to be done in conjunction with GeoBlacklight team
+
+Data Management
+- Explain OpenGeometadata & GeoCombine
+- Explain Geoblacklight-schema & OGP harvesting
+- Decide which non-CU institutions to include, from which sources
+- Setup automated loads of non-CU
+- Approach to loading Columbia metadata
+- Workflow for handling Columbia data validation-error han
+- Investigate ESRI/ArcGIS support
+
+
+
+
+
+---------- Forwarded message ----------
+From: Stuart Marquis <marquis@columbia.edu>
+Date: Thu, Nov 12, 2015 at 11:28 AM
+Subject: Re: GeoBlacklight Demo
+To: "J. C. Trinidad-Christensen" <jt2118@columbia.edu>
+Cc: Breck A Witte <witte@columbia.edu>, Eric Glass <ecg2104@columbia.edu>
+
+
+Good, sounds like we're all agreed that this is a good thing to explore.  Let's setup a time to call and sketch out a project plan on this.  I'm working remotely now (from Boston), so it'll be a call/skype/hangout instead of a meeting.
+
+But to address the points you raise about data processing and CLIO integration:
+
+The Columbia data you see in GeoBlacklight now was harvested from our OGP.  The GeoBlacklight project has scripts to query institutions' OGP instances for records, transform them into the GeoBlacklight schema, and index them into GeoBlacklight.  This may or may not be the best workflow going forward - but it was fast and easy.  There's quite a bit of data validation as part of this process.  Of your 3,353 OGP records, only 2,894 has sufficient metadata quality for GeoBlacklight.  Part of this project will be to look into these 459 failures and decide what changes need to be made - to the data, the ingest procedures, or possibly to GeoBlacklight itself.
+
+The CLIO team is interested in adding GIS search as an additional datasource, and GeoBlacklight will make that easier.  However, we're also thinking of ways to move away from the bento-box QuickSearch page.  That page has proven to not be useful for our patrons, and doesn't do much more than an extra click for experienced users of CLIO.
+
+Let me know what would be a good time to talk, either this week or next.  I use Skype quite a bit with Breck and Gary, but anything works for me.
+
+-Stuart
+
+
+
+On Thu, Nov 12, 2015 at 9:41 AM, J. C. Trinidad-Christensen <jt2118@columbia.edu> wrote:
+Stuart, just to add, your timing is great. We've hit a wall on what we can do (or willing to do) with OGP and was leaning toward giving GB a try. The fact that you already have the instance setup makes me very hopeful in a finding a smoother solution with less staff time requirements pouring over code. 
+
+On Thu, Nov 12, 2015 at 9:34 AM, J. C. Trinidad-Christensen <jt2118@columbia.edu> wrote:
+Hi Stuart,
+
+This is great! I am absolutely interested in this. OGP has been giving us headache after headache. Can we meet to talk about ingesting our metadata into GeoBlacklight and next steps to include it in the Bento Box too?
+
+Thanks,
+Jeremiah
+
+On Wed, Nov 11, 2015 at 4:41 PM, Stuart Marquis <marquis@columbia.edu> wrote:
+Hi Jeremiah-
+
+I just got back from a Blacklight conference, where I met a lot of GeoBlacklight folks.  After hearing them talk about the project and seeing their presentations, I thought I'd look into GeoBlacklight for Columbia.  It turns out that it was pretty simple to setup and install, including indexing the records from various institutions.  I've got our demo running here:
+
+    https://geoblacklight-dev.cul.columbia.edu/
+
+I talked to Breck about this, and he suggested that I get in touch with you to talk about GIS discovery.  I'm wondering if you're interested in GeoBlacklight as an alternative patron experience to OpenGeoportal.  The search interface, to me, seems pretty good, and the technology stack is definitely much easier for LITO to support going forward.
+
+-Stuart
+
+-- 
+Stuart Marquis
+Columbia University Libraries, Information Technology Office
+2M05 Butler Library
+535 West 114th Street
+New York, NY  10027
+marquis@columbia.edu
+
+
+
+-- 
+Jeremiah Trinidad-Christensen
+Geospatial Services Coordinator
+Digital Social Science Center (DSSC)
+Columbia University Libraries
+211 IAB, New York, NY 10027
+212-854-5664
+
+
+
+-- 
+Jeremiah Trinidad-Christensen
+Geospatial Services Coordinator
+Digital Social Science Center (DSSC)
+Columbia University Libraries
+211 IAB, New York, NY 10027
+212-854-5664
+
+
+
+-- 
+Stuart Marquis
+Columbia University Libraries, Information Technology Office
+2M05 Butler Library
+535 West 114th Street
+New York, NY  10027
+marquis@columbia.edu
+
+
+
+-- 
+Stuart Marquis
+Columbia University Libraries, Information Technology Office
+2M05 Butler Library
+535 West 114th Street
+New York, NY  10027
+marquis@columbia.edu
