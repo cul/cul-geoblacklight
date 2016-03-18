@@ -5,7 +5,7 @@ set :application, 'geoblacklight'
 set :repo_url, 'git@github.com:cul/geoblacklight-demo.git'
 
 # Default branch is :master
-# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
 # set :deploy_to, '/var/www/my_app_name'
@@ -27,13 +27,20 @@ set :repo_url, 'git@github.com:cul/geoblacklight-demo.git'
 set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml', 'config/settings.yml', 'config/blacklight.yml', 'config/jetty.yml')
 
 # Default value for linked_dirs is []
-# set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system')
+set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache')
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
+
+# restart passenger with 'touch tmp/restart.txt' instead of 'passenger-config restart-app'
+set :passenger_restart_with_touch, true
+
+# Use non-default Ruby
+# set :rvm_ruby_string, "2.1.5"
+set :rvm_ruby_version, "2.1.5"
 
 namespace :deploy do
 

@@ -55,6 +55,12 @@ group :development do
   # Just add it to your Gemfile and require it in your Capfile.
   gem 'capistrano-passenger',   '~> 0.1', require: false
 
+  # Errors give an in-browser debugger
+  # gem 'better_errors', '~> 2.0.0'
+  # gem 'binding_of_caller', '~> 0.7.2'
+  gem 'better_errors'
+  gem 'binding_of_caller'
+
 end
 
 

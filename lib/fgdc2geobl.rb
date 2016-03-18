@@ -65,6 +65,9 @@ module Fgdc2Geobl
   end
 
   def doc2dc_rights(doc)
+    # TODO - implement CAS auth, so we can work with Restricted material
+    return "Public"
+
     # Access Constraints
     accconst = doc.xpath("//idinfo/accconst").text
     return "Public" if accconst.match /Unrestricted/i
@@ -113,7 +116,7 @@ module Fgdc2Geobl
     # ArcGIS DynamicMapLayer
     # ArcGIS ImageMapLayer
 
-    return dct_references.compact
+    return dct_references.compact.to_json.to_s
   end
 
   def doc2georss_box(doc)
