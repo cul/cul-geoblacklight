@@ -64,7 +64,39 @@ namespace :metadata do
   end
 
   desc "Ingest the GeoBlacklight Schema XML"
-  task :ingest => :environment do
+  task :ingest, [:file_pattern] => :environment do |t, args|
+    file_pattern = args[:file_pattern] || "."
+
+    puts "Connecting to Solr..."
+    solr = RSolr.connect :url => Blacklight.solr_config[:url]
+    puts "solr=#{solr}"
+
+    note = " of files matching /#{file_pattern}/" if file_pattern != '.'
+    puts "Begining ingest#{note}..."
+    ingested = 0
+    Dir.glob("#{geobl_current}*.json").each { |geobl_file|
+      next unless geobl_file =~ /#{file_pattern}/
+
+      begin
+        puts " - #{File.basename(geobl_file)}" if file_pattern != '.'
+        geobl_json = JSON.parse(File.read(geobl_file))
+        solr.update params: { commitWithin: 500, overwrite: true },
+                    data: [geobl_json].to_json,
+                    headers: { 'Content-Type' => 'application/json' }
+        ingested = ingested + 1
+      rescue => ex
+        puts "Error ingesting #{geobl_file}: " + ex.message
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+      end
+    }
+    puts "Ingested #{ingested} files."
+
+    puts "Committing..."
+    solr.update :data => '<commit/>'
+    puts "Optimizing..."
+    solr.update :data => '<optimize/>'
+    puts "Done."
+
   end
 end
 
