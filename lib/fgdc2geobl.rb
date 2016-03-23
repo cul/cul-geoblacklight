@@ -47,8 +47,7 @@ module Fgdc2Geobl
 
 
   def doc2uuid(doc)
-    resdesc = doc.xpath("//resdesc").text
-    return "urn:columbia.edu:Columbia.#{resdesc}"
+    return "urn:columbia.edu:Columbia.#{@resdesc}"
   end
 
   def doc2dc_identifier(doc)
@@ -99,7 +98,9 @@ module Fgdc2Geobl
     ###   Which ones are we able to provide?
 
     # Web Mapping Service (WMS) 
+    dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] = 'http://geodata.cul.columbia.edu/geoserver/sde/wms'
     # Web Feature Service (WFS)
+    dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] = 'http://geodata.cul.columbia.edu/geoserver/sde/wfs'
     # International Image Interoperability Framework (IIIF) Image API
     # Direct download file
     if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
@@ -109,8 +110,12 @@ module Fgdc2Geobl
     end
     # Full layer description
     # Metadata in ISO 19139
+    dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
+        APP_CONFIG['display_urls']['iso19139'] + "/#{@resdesc}.xml"
     # Metadata in MODS
-    # Metadata in HTML  
+    # Metadata in HTML
+    dct_references['http://www.w3.org/1999/xhtml'] =
+        APP_CONFIG['display_urls']['html'] + "/#{@resdesc}.hxml"
     # ArcGIS FeatureLayer
     # ArcGIS TiledMapLayer
     # ArcGIS DynamicMapLayer
@@ -124,21 +129,23 @@ module Fgdc2Geobl
   end
 
   def doc2layer_id(doc)
-    resdesc = doc.xpath("//resdesc").text
-    return "Columbia:Columbia.#{resdesc}"
+    return "Columbia:Columbia.#{@resdesc}"
   end
 
   # Possibly also consider:
   #   idinfo/keywords/theme/themekey
   #   spdoinfo/ptvctinf/esriterm/efeageom
+  # Suggested vocabulary:
+  #     "Point", "Line", "Polygon", "Raster", "Scanned Map", "Mixed"
   def doc2layer_geom_type(doc)
     sdtstype = doc.xpath("//metadata/spdoinfo/ptvctinf/sdtsterm/sdtstype").text
     return "Polygon" if sdtstype.match /G-polygon/i
-    return "Point" if sdtstype.match /Entity point/i
+    return "Point" if sdtstype.match /Point/i
     return "Line" if sdtstype.match /String/i
 
     direct = doc.xpath("//metadata/spdoinfo/direct").text
     return "Raster" if direct.match /Raster/i
+    return "Point" if direct.match /Point/i
 
     # undetermined
     return "UNDETERMINED"
@@ -159,40 +166,66 @@ module Fgdc2Geobl
 
   # 2_transform.rb says:
   # :solr_geom  => "ENVELOPE(#{w}, #{e}, #{n}, #{s})",
+  # Solr docs say:   "minX, maxX, maxY, minY order"
   def doc2solr_geom(doc)
     return "ENVELOPE(#{@westbc}, #{@eastbc}, #{@northbc}, #{@southbc})"
   end
 
   def doc2solr_year(doc)
+    # check each of four locations, find the first 4-digit sequence.
     if d = doc.at_xpath("//idinfo/timeperd/timeinfo/sngdate/caldate")
-      return d.text[0..3]
-    elsif d = doc.at_xpath("//idinfo/timeperd/timeinfo/mdattim/sngdate/caldate")
-      return d.text[0..3]
-    elsif d = doc.at_xpath("//idinfo/timeperd/timeinfo/rngdates/begdate")
-      return d.text[0..3]
-    elsif d = doc.at_xpath("//idinfo/keywords/temporal/tempkey")
-      return d.text[0..3]
+      d.text.scan(/\d\d\d\d/) { |year| return year }
     end
+    if d = doc.at_xpath("//idinfo/timeperd/timeinfo/mdattim/sngdate/caldate")
+      d.text.scan(/\d\d\d\d/) { |year| return year }
+    end
+    if d = doc.at_xpath("//idinfo/timeperd/timeinfo/rngdates/begdate")
+      d.text.scan(/\d\d\d\d/) { |year| return year }
+    end
+    if d = doc.at_xpath("//idinfo/keywords/temporal/tempkey")
+      d.text.scan(/\d\d\d\d/) { |year| return year }
+    end
+    # elsif d = doc.at_xpath("//idinfo/timeperd/timeinfo/mdattim/sngdate/caldate")
+    #   return d.text[0..3]
+    # elsif d = doc.at_xpath("//idinfo/timeperd/timeinfo/rngdates/begdate")
+    #   return d.text[0..3]
+    # elsif d = doc.at_xpath("//idinfo/keywords/temporal/tempkey")
+    #   return d.text[0..3]
+    # end
 
     # Couldn't find any date?
     return "UNDETERMINED"
   end
 
   def doc2dc_creator(doc)
-    doc.xpath("//idinfo/citation/citeinfo/origin").map(&:text)
+    # doc.xpath("//idinfo/citation/citeinfo/origin").map(&:text.strip)
+    doc.xpath("//idinfo/citation/citeinfo/origin").map { |node|
+      node.text.strip
+    }
   end
 
+  # Suggested vocabulary: Shapefile, GeoTIFF, ArcGRID
   def doc2dc_format(doc)
-    geoform = doc.xpath("//metadata/idinfo/citation/citeinfo/geoform").text
-    return "image/tiff" if geoform.match /raster digital data/i
-    return "application/x-esri-shapefile" if geoform.match /vector digital data/i
 
-    formname = doc.xpath("//metadata/distinfo/stdorder/digform/digtinfo/formname").text
-    return "image/tiff" if formname.match /TIFF/i
-    return "image/tiff" if formname.match /JPEG2000/i
-    return "application/x-esri-shapefile" if formname.match /Shape/i
+    # blacklight-schema's 2_transform.rb determines Format based on Layer Geometry
+    layer_geom_type = doc2layer_geom_type(doc)
+    return 'GeoTiff' if layer_geom_type.match /Raster/i
+    return 'Shapefile' if layer_geom_type.match /Point|Line|Polygon/i
+    return 'Paper' if layer_geom_type.match /Paper/i
 
-    # undetermined
+    geoform = doc.xpath("//metadata/idinfo/citation/citeinfo/geoform").text.strip
+    return "GeoTiff" if geoform.match /raster digital data/i
+    return "Shapefile" if geoform.match /vector digital data/i
+
+    formname = doc.xpath("//metadata/distinfo/stdorder/digform/digtinfo/formname").text.strip
+    return "GeoTiff" if formname.match /TIFF/i
+    return "Shapefile" if formname.match /Shape/i
+
+    # OK, just return whatever crazy string is in the geoform/formname
+    return geoform if geoform.length > 0
+    return formname if formname.length > 0
+
+    # or, if those are both empty, undetermined.
     return "UNDETERMINED"
   end
 
@@ -205,11 +238,18 @@ module Fgdc2Geobl
   end
 
   def doc2dc_publisher(doc)
-    doc.xpath("//idinfo/citation/citeinfo/pubinfo/publish").text
+    # doc.xpath("//idinfo/citation/citeinfo/pubinfo/publish").text
+    # doc.xpath("//idinfo/citation/citeinfo/pubinfo/publish").map(&:text.strip)
+    doc.xpath("//idinfo/citation/citeinfo/pubinfo/publish").map { |node|
+      node.text.strip
+    }
   end
 
   def doc2dc_subject(doc)
-    doc.xpath("//idinfo/keywords/theme/themekey").map(&:text)
+    # doc.xpath("//idinfo/keywords/theme/themekey").map(&:text.strip)
+    doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
+      node.text.strip
+    }
   end
 
   def doc2dc_type(doc)
@@ -218,14 +258,18 @@ module Fgdc2Geobl
   end
 
   def doc2dct_spatial(doc)
-    doc.xpath("//idinfo/keywords/place/placekey").text
+    doc.xpath("//idinfo/keywords/place/placekey").map { |node|
+      node.text.strip
+    }
   end
 
   def doc2dct_temporal(doc)
     dates = []
+    caldate = ''
 
     if d = doc.at_xpath("//idinfo/timeperd/timeinfo/sngdate/caldate")
-      dates << d.text[0..3]
+      caldate = d.text[0..3]
+      dates << caldate
     end
 
     if d = doc.at_xpath("//idinfo/timeperd/timeinfo/mdattim/sngdate")
@@ -237,7 +281,9 @@ module Fgdc2Geobl
     end
 
     if d = doc.at_xpath("//idinfo/keywords/temporal/tempkey")
-      dates << d.text[0..3]
+      tempkey = d.text[0..3]
+      # Add it... unless it's redundant with caldate, above
+      dates << tempkey unless tempkey == caldate
     end
 
     return dates.compact
@@ -257,12 +303,16 @@ module Fgdc2Geobl
   def doc2dct_isPartOf(doc)
     isPartOf = []
     doc.xpath("//idinfo/citation/citeinfo/lworkcit/citeinfo").each { |citeinfo|
-      isPartOf << citeinfo.xpath("title")
-      isPartOf << citeinfo.xpath("sername")
+      # isPartOf << citeinfo.xpath("title").text.strip
+      # isPartOf << citeinfo.xpath("sername").text.strip
+      isPartOf << citeinfo.xpath("title").map { |node| node.text.strip }
+      isPartOf << citeinfo.xpath("sername").map { |node| node.text.strip }
     }
     doc.xpath("//idinfo/citation/citeinfo/serinfo").each { |citeinfo|
-      isPartOf << citeinfo.xpath("title")
-      isPartOf << citeinfo.xpath("sername")
+      # isPartOf << citeinfo.xpath("title").text.strip
+      # isPartOf << citeinfo.xpath("sername").text.strip
+      isPartOf << citeinfo.xpath("title").map { |node| node.text.strip }
+      isPartOf << citeinfo.xpath("sername").map { |node| node.text.strip }
     }
     return isPartOf.compact
   end
@@ -283,6 +333,9 @@ module Fgdc2Geobl
 
   #####################
   def set_variables(doc)
+    # the unique key for this metadata record
+    @resdesc = doc.xpath("//resdesc").text.strip
+
     # bounding coordinates
     @northbc = doc.xpath("//idinfo/spdom/bounding/northbc").text.to_f
     @southbc = doc.xpath("//idinfo/spdom/bounding/southbc").text.to_f

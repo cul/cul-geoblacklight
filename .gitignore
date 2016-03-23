@@ -21,5 +21,6 @@ config/secrets.yml
 
 # don't put metadata into repo
 /tmp/metadata
+/public/metadata
 
 

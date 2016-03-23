@@ -223,6 +223,13 @@ class CatalogController < ApplicationController
     # 'positron' http://cartodb.com/basemaps/
     # 'darkMatter' http://cartodb.com/basemaps/
     config.basemap_provider = 'mapquest'
+
+
+    # CUL customizations
+    config.show.document_actions.delete(:sms)
+    config.show.document_actions.delete(:bookmark)
+    config.show.document_actions.delete(:citation)
+
   end
 
 

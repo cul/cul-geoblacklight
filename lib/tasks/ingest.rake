@@ -3,12 +3,15 @@ require 'open-uri'
 require 'fgdc2geobl'
 include Fgdc2Geobl
 
+require 'fgdc2html'
+include Fgdc2Html
+
 # Keep one older iteration - very useful for debugging
-geobl_current = File.join(Rails.root, "tmp/metadata/geobl/current/")
-fgdc_current = File.join(Rails.root, "tmp/metadata/fgdc/current/")
-fgdc_old = File.join(Rails.root, "tmp/metadata/fgdc/old/")
-geobl_current = File.join(Rails.root, "tmp/metadata/geobl/current/")
-geobl_old = File.join(Rails.root, "tmp/metadata/geobl/old/")
+fgdc_current = File.join(Rails.root, "public/metadata/fgdc/current/")
+fgdc_old = File.join(Rails.root, "public/metadata/fgdc/old/")
+fgdc_html_dir = File.join(Rails.root, "public/metadata/fgdc/html/")
+geobl_current = File.join(Rails.root, "public/metadata/geobl/current/")
+geobl_old = File.join(Rails.root, "public/metadata/geobl/old/")
 
 namespace :metadata do
   desc "Download the FGDC XML"
@@ -37,6 +40,29 @@ namespace :metadata do
       puts("Unzip unsuccessful")
       next
     end
+  end
+
+  desc "Transform the FGDC XML to display HTML"
+  task :htmlize, [:file_pattern] => :environment do |t, args|
+    file_pattern = args[:file_pattern] || "."
+
+    FileUtils.rm_rf(fgdc_html_dir)
+    FileUtils.mkdir_p(fgdc_html_dir)
+
+    Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
+      next unless fgdc_file =~ /#{file_pattern}/
+
+      begin
+        # The HTML file will be the same basename, but html
+        html_file = "#{fgdc_html_dir}#{File.basename(fgdc_file, '.xml')}.html"
+        fgdc_xml = File.read(fgdc_file)
+        fgdc_html = fgdc2html(fgdc_xml)
+        File.write(html_file, fgdc_html + "\n")
+      rescue => ex
+        puts "Error processing #{fgdc_file}: " + ex.message
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+      end
+    }
   end
 
   desc "Transform the FGDC XML to GeoBlacklight Schema XML"
