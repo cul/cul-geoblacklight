@@ -81,7 +81,8 @@ class CatalogController < ApplicationController
 
     config.add_facet_field 'solr_year_i', :label => 'Year', :limit => 10, :range => {
       # :num_segments => 6,
-      :assumed_boundaries => [1100, 2015]
+      # :assumed_boundaries => [1100, 2015]
+      :assumed_boundaries => [1100, Time.now.year]
       # :segments => true
     }
 
@@ -127,6 +128,10 @@ class CatalogController < ApplicationController
     config.add_show_field 'dct_spatial_sm', label: 'Place(s)', itemprop: 'spatial', link_to_search: true
     config.add_show_field 'dc_subject_sm', label: 'Subject(s)', itemprop: 'keywords', link_to_search: true
     config.add_show_field 'dct_temporal_sm', label: 'Year', itemprop: 'temporal'
+
+    # CUL customization
+    config.add_show_field 'layer_geom_type_s', label: 'Layer Geometry', itemprop: 'geometry', link_to_search: true
+
     config.add_show_field 'dct_provenance_s', label: 'Held by', link_to_search: true
 
     # "fielded" search configuration. Used by pulldown among other places.

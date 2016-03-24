@@ -73,20 +73,26 @@ namespace :metadata do
     FileUtils.mv(geobl_current, geobl_old) if File.exists?(geobl_current)
     FileUtils.mkdir_p(geobl_current)
 
+    note = " of files matching /#{file_pattern}/" if file_pattern != '.'
+    puts "Begining transform#{note}..."
+    transformed = 0
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
 
       begin
+        puts " - #{File.basename(fgdc_file)}" if file_pattern != '.'
         # The GeoBlacklight schema file will be the same basename, but json
         geobl_file = "#{geobl_current}#{File.basename(fgdc_file, '.xml')}.json"
         fgdc_xml = File.read(fgdc_file)
         geobl_json = fgdc2geobl(fgdc_file, fgdc_xml)
         File.write(geobl_file, geobl_json + "\n")
+        transformed = transformed + 1
       rescue => ex
         puts "Error processing #{fgdc_file}: " + ex.message
         puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
+    puts "Transformed #{transformed} files."
   end
 
   desc "Ingest the GeoBlacklight Schema XML"

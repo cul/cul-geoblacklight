@@ -103,7 +103,7 @@ module Fgdc2Geobl
     # Web Mapping Service (WMS) 
     dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] = 'https://geodata.cul.columbia.edu/geoserver/sde/wms'
     # Web Feature Service (WFS)
-    dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] = 'https://geodata.cul.columbia.edu/geoserver/sde/wfs'
+    dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] = 'https://geodata.cul.columbia.edu/geoserver/sde/ows'
     # International Image Interoperability Framework (IIIF) Image API
     # Direct download file
     if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
@@ -132,7 +132,8 @@ module Fgdc2Geobl
   end
 
   def doc2layer_id(doc)
-    return "Columbia:Columbia.#{@resdesc}"
+    # return "Columbia:Columbia.#{@resdesc}"
+    return "sde:columbia.#{@resdesc}".html_safe
   end
 
   # Possibly also consider:
