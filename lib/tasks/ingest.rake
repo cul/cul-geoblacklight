@@ -56,7 +56,7 @@ namespace :metadata do
         # The HTML file will be the same basename, but html
         html_file = "#{fgdc_html_dir}#{File.basename(fgdc_file, '.xml')}.html"
         fgdc_xml = File.read(fgdc_file)
-        fgdc_html = fgdc2html(fgdc_xml)
+        fgdc_html = fgdc2html(fgdc_file, fgdc_xml)
         File.write(html_file, fgdc_html + "\n")
       rescue => ex
         puts "Error processing #{fgdc_file}: " + ex.message
@@ -80,7 +80,7 @@ namespace :metadata do
         # The GeoBlacklight schema file will be the same basename, but json
         geobl_file = "#{geobl_current}#{File.basename(fgdc_file, '.xml')}.json"
         fgdc_xml = File.read(fgdc_file)
-        geobl_json = fgdc2geobl(fgdc_xml)
+        geobl_json = fgdc2geobl(fgdc_file, fgdc_xml)
         File.write(geobl_file, geobl_json + "\n")
       rescue => ex
         puts "Error processing #{fgdc_file}: " + ex.message

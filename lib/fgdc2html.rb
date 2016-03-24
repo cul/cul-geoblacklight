@@ -1,6 +1,6 @@
 module Fgdc2Html
 
-  def fgdc2html(fgdc_xml)
+  def fgdc2html(fgdc_file, fgdc_xml)
 
     doc  = Nokogiri::XML(fgdc_xml) do |config|
       config.strict.nonet
