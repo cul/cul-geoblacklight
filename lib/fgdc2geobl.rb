@@ -101,9 +101,11 @@ module Fgdc2Geobl
     ###   Which ones are we able to provide?
 
     # Web Mapping Service (WMS) 
-    dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] = 'https://geodata.cul.columbia.edu/geoserver/sde/wms'
+    dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
+        APP_CONFIG['geoserver_url'] + '/wms/sde'
     # Web Feature Service (WFS)
-    dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] = 'https://geodata.cul.columbia.edu/geoserver/sde/ows'
+    dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
+        APP_CONFIG['geoserver_url'] + '/sde/ows'
     # International Image Interoperability Framework (IIIF) Image API
     # Direct download file
     if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
@@ -273,15 +275,20 @@ module Fgdc2Geobl
 
   def doc2dct_temporal(doc)
     dates = []
-    caldate = ''
+    caldate_year = ''
 
     if d = doc.at_xpath("//idinfo/timeperd/timeinfo/sngdate/caldate")
-      caldate = d.text[0..3]
-      dates << caldate
+      d.text.scan(/\d\d\d\d/) { |year|
+        caldate_year = year
+        dates << year
+      }
+      # caldate = d.text[0..3]
+      # dates << caldate
     end
 
     if d = doc.at_xpath("//idinfo/timeperd/timeinfo/mdattim/sngdate")
-      dates << d.text[0..3]
+      d.text.scan(/\d\d\d\d/) { |year| dates << year }
+      # dates << d.text[0..3]
     end
 
     if rngdates = doc.at_xpath("//idinfo/timeperd/timeinfo/rngdates")
@@ -289,9 +296,14 @@ module Fgdc2Geobl
     end
 
     if d = doc.at_xpath("//idinfo/keywords/temporal/tempkey")
-      tempkey = d.text[0..3]
-      # Add it... unless it's redundant with caldate, above
-      dates << tempkey unless tempkey == caldate
+      d.text.scan(/\d\d\d\d/) { |year|
+        #  Add it... unless it's redundant with caldate_year, above
+        next if year == caldate_year
+        dates << year
+      }
+      # tempkey = d.text[0..3]
+      # # Add it... unless it's redundant with caldate, above
+      # dates << tempkey unless tempkey == caldate
     end
 
     return dates.compact
@@ -313,16 +325,16 @@ module Fgdc2Geobl
     doc.xpath("//idinfo/citation/citeinfo/lworkcit/citeinfo").each { |citeinfo|
       # isPartOf << citeinfo.xpath("title").text.strip
       # isPartOf << citeinfo.xpath("sername").text.strip
-      isPartOf << citeinfo.xpath("title").map { |node| node.text.strip }
-      isPartOf << citeinfo.xpath("sername").map { |node| node.text.strip }
+      citeinfo.xpath("title").map { |node| isPartOf << node.text.strip }
+      citeinfo.xpath("sername").map { |node| isPartOf << node.text.strip }
     }
     doc.xpath("//idinfo/citation/citeinfo/serinfo").each { |citeinfo|
       # isPartOf << citeinfo.xpath("title").text.strip
       # isPartOf << citeinfo.xpath("sername").text.strip
-      isPartOf << citeinfo.xpath("title").map { |node| node.text.strip }
-      isPartOf << citeinfo.xpath("sername").map { |node| node.text.strip }
+      citeinfo.xpath("title").map { |node| isPartOf << node.text.strip }
+      citeinfo.xpath("sername").map { |node| isPartOf << node.text.strip }
     }
-    return isPartOf.compact
+    return isPartOf.flatten.compact
   end
 
   # omit?
