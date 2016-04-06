@@ -250,10 +250,14 @@ module Fgdc2Geobl
   end
 
   def doc2dc_subject(doc)
-    # doc.xpath("//idinfo/keywords/theme/themekey").map(&:text.strip)
-    doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
-      node.text.strip
-    }
+    # doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
+    #   node.text.strip
+    # }
+    if iso_theme = doc.at('theme:has(themekt[text()="ISO 19115 Topic Categories"])')
+      iso_theme.xpath(".//themekey").map { |node|
+        node.text.strip
+      }
+    end
   end
 
   def doc2dc_type(doc)
