@@ -1357,7 +1357,13 @@
       <xsl:for-each select="onlink">
         <dt>Online Linkage</dt>
         <dd>
+          <!--  Make a live link
           <xsl:value-of select="." />
+          -->
+          <xsl:variable name="link">
+            <xsl:value-of select="." />
+          </xsl:variable>
+          <a href='{$link}'><xsl:value-of select="$link" /></a>
         </dd>
       </xsl:for-each>
     </dl>

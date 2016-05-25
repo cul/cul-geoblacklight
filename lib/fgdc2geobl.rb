@@ -109,18 +109,18 @@ module Fgdc2Geobl
     # International Image Interoperability Framework (IIIF) Image API
     # Direct download file
     if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
-      if onlink.text.match /www.columbia.edu/
+      if onlink.text.match /.columbia.edu/
         dct_references['http://schema.org/downloadUrl'] = onlink.text
       end
     end
     # Full layer description
+    # Metadata in HTML
+    dct_references['http://www.w3.org/1999/xhtml'] =
+        APP_CONFIG['display_urls']['html'] + "/#{basename}.html"
     # Metadata in ISO 19139
     dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
         APP_CONFIG['display_urls']['iso19139'] + "/#{basename}.xml"
     # Metadata in MODS
-    # Metadata in HTML
-    dct_references['http://www.w3.org/1999/xhtml'] =
-        APP_CONFIG['display_urls']['html'] + "/#{basename}.html"
     # ArcGIS FeatureLayer
     # ArcGIS TiledMapLayer
     # ArcGIS DynamicMapLayer

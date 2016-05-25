@@ -24,3 +24,6 @@ config/secrets.yml
 /public/metadata
 
 
+# Ignore other dotfiles
+.byebug_history
+
