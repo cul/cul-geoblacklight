@@ -64,8 +64,8 @@ module Fgdc2Geobl
   end
 
   def doc2dc_rights(doc)
-    # TODO - implement CAS auth, so we can work with Restricted material
-    return "Public"
+    # To get started, set everything to 'public'
+    # return "Public"
 
     # Access Constraints
     accconst = doc.xpath("//idinfo/accconst").text
