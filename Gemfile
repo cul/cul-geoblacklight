@@ -2,13 +2,13 @@ source 'https://rubygems.org'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.5'
+gem 'rails', '~> 4.2'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
+gem 'uglifier'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.1.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
@@ -28,9 +28,6 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 # Use Unicorn as the app server
 # gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -56,16 +53,16 @@ group :development do
   gem 'capistrano-passenger',   '~> 0.1', require: false
 
   # Errors give an in-browser debugger
-  # gem 'better_errors', '~> 2.0.0'
-  # gem 'binding_of_caller', '~> 0.7.2'
   gem 'better_errors'
   gem 'binding_of_caller'
 
 end
 
 
-gem 'blacklight'
+gem 'blacklight', '~> 5'
 gem 'geoblacklight'
+gem 'blacklight_range_limit', '~> 5'
+
 gem 'jettywrapper'
 gem 'rsolr', '~> 1.0.6'
 gem 'devise'

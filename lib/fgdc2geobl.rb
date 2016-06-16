@@ -64,7 +64,7 @@ module Fgdc2Geobl
   end
 
   def doc2dc_rights(doc)
-    # TODO - implement CAS auth, so we can work with Restricted material
+    # TODO - implement CAS auth, so we can work more correctly with Restricted material
     return "Public"
 
     # Access Constraints
