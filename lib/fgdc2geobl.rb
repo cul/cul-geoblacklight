@@ -153,6 +153,9 @@ module Fgdc2Geobl
     return "Raster" if direct.match /Raster/i
     return "Point" if direct.match /Point/i
 
+    indspref = doc.xpath("//metadata/spdoinfo/indspref").text
+    return "Table" if indspref.match /Table/i
+
     # undetermined
     return "UNDETERMINED"
   end
