@@ -12,6 +12,7 @@ fgdc_old = File.join(Rails.root, "public/metadata/fgdc/old/")
 fgdc_html_dir = File.join(Rails.root, "public/metadata/fgdc/html/")
 geobl_current = File.join(Rails.root, "public/metadata/geobl/current/")
 geobl_old = File.join(Rails.root, "public/metadata/geobl/old/")
+json_filename = 'geoblacklight.json'
 
 namespace :metadata do
   desc "Download the FGDC XML"
@@ -46,17 +47,28 @@ namespace :metadata do
   task :htmlize, [:file_pattern] => :environment do |t, args|
     file_pattern = args[:file_pattern] || "."
 
-    FileUtils.rm_rf(fgdc_html_dir)
-    FileUtils.mkdir_p(fgdc_html_dir)
+    # If we're doing a full re-generate of all documents, 
+    # then delete everything and rebuild from scratch
+    if file_pattern == '.'
+      FileUtils.rm_rf(fgdc_html_dir)
+      FileUtils.mkdir_p(fgdc_html_dir)
+    end
 
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
 
       begin
-        # The HTML file will be the same basename, but html
-        html_file = "#{fgdc_html_dir}#{File.basename(fgdc_file, '.xml')}.html"
         fgdc_xml = File.read(fgdc_file)
-        fgdc_html = fgdc2html(fgdc_file, fgdc_xml)
+        nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
+          config.strict.nonet
+        end
+        # Set some instance variables for repeated reuse
+        set_variables(nokogiri_doc)
+
+        fgdc_html = fgdc2html(nokogiri_doc)
+
+        # The HTML file will be name for the FGDC <resdesc> 
+        html_file = "#{fgdc_html_dir}#{@resdesc}.html"
         File.write(html_file, fgdc_html + "\n")
       rescue => ex
         puts "Error processing #{fgdc_file}: " + ex.message
@@ -69,9 +81,13 @@ namespace :metadata do
   task :transform, [:file_pattern] => :environment do |t, args|
     file_pattern = args[:file_pattern] || "."
 
-    FileUtils.rm_rf(geobl_old)
-    FileUtils.mv(geobl_current, geobl_old) if File.exists?(geobl_current)
-    FileUtils.mkdir_p(geobl_current)
+    # If we're doing a full re-generate of all documents, 
+    # then cycle 'current' to 'old', build new 'current' from scratch.
+    if file_pattern == '.'
+      FileUtils.rm_rf(geobl_old)
+      FileUtils.mv(geobl_current, geobl_old) if File.exists?(geobl_current)
+      FileUtils.mkdir_p(geobl_current)
+    end
 
     note = " of files matching /#{file_pattern}/" if file_pattern != '.'
     puts "Begining transform#{note}..."
@@ -82,9 +98,22 @@ namespace :metadata do
       begin
         puts " - #{File.basename(fgdc_file)}" if file_pattern != '.'
         # The GeoBlacklight schema file will be the same basename, but json
-        geobl_file = "#{geobl_current}#{File.basename(fgdc_file, '.xml')}.json"
         fgdc_xml = File.read(fgdc_file)
-        geobl_json = fgdc2geobl(fgdc_file, fgdc_xml)
+
+
+        nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
+          config.strict.nonet
+        end
+        # Set some instance variables for repeated reuse
+        set_variables(nokogiri_doc)
+
+        # geobl_json = fgdc2geobl(fgdc_file, fgdc_xml)
+        geobl_json = fgdc2geobl(nokogiri_doc)
+
+        # geobl_file = "#{geobl_current}#{File.basename(fgdc_file, '.xml')}.json"
+        doc_dir = "#{geobl_current}#{@resdesc}"
+        FileUtils.mkdir_p(doc_dir)
+        geobl_file = "#{doc_dir}/#{json_filename}"
         File.write(geobl_file, geobl_json + "\n")
         transformed = transformed + 1
       rescue => ex
@@ -106,11 +135,13 @@ namespace :metadata do
     note = " of files matching /#{file_pattern}/" if file_pattern != '.'
     puts "Begining ingest#{note}..."
     ingested = 0
-    Dir.glob("#{geobl_current}*.json").each { |geobl_file|
+    Dir.glob("#{geobl_current}*/#{json_filename}").each { |geobl_file|
       next unless geobl_file =~ /#{file_pattern}/
 
       begin
-        puts " - #{File.basename(geobl_file)}" if file_pattern != '.'
+        # puts " - #{File.basename(geobl_file)}" if file_pattern != '.'
+        label = geobl_file.sub(/\/#{json_filename}/, '').sub(/.*\//, '')
+        puts " - #{label}" if file_pattern != '.'
         geobl_json = JSON.parse(File.read(geobl_file))
         solr.update params: { commitWithin: 500, overwrite: true },
                     data: [geobl_json].to_json,
