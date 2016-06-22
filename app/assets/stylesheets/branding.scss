@@ -23,3 +23,24 @@
 	  padding-left: 0;
   }
 }
+
+
+/*
+ * The core GeoBlacklight project sytles give Stanford a
+ * special colorized icon (icon-customization.scss).
+ * Undo that for Stanford, add it for Columbia.
+ * Also make our crown bigger - it's very squished in
+ * the geoblacklight-icons repo.
+ */
+.geoblacklight-stanford {
+  color: $gray-light;
+}
+.geoblacklight-columbia {
+  color: $culDarkBlue;
+  font-size: 150%;
+}
+
+
+
+
+
