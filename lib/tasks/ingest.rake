@@ -129,7 +129,7 @@ namespace :metadata do
     file_pattern = args[:file_pattern] || "."
 
     puts "Connecting to Solr..."
-    solr = RSolr.connect :url => Blacklight.solr_config[:url]
+    solr = RSolr.connect :url => Blacklight.connection_config[:url]
     puts "solr=#{solr}"
 
     note = " of files matching /#{file_pattern}/" if file_pattern != '.'
