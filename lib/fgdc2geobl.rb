@@ -15,12 +15,17 @@ module Fgdc2Geobl
 
     layer = {}
 
+    # Figure this out first, some of the other metadata
+    # is based on this value
+    @dc_rights = doc2dc_rights(doc)
+
     # Add each element in turn...
     layer[:uuid] = doc2uuid(doc)
     layer[:dc_identifier_s] = doc2dc_identifier(doc)
     layer[:dc_title_s] = doc2dc_title(doc)
     layer[:dc_description_s] = doc2dc_description(doc)
-    layer[:dc_rights_s] = doc2dc_rights(doc)
+    # layer[:dc_rights_s] = doc2dc_rights(doc)
+    layer[:dc_rights_s] = @dc_rights
     layer[:dct_provenance_s] = doc2dct_provenance(doc)
     # layer[:dct_references_s] = doc2dct_references(fgdc_file, doc)
     layer[:dct_references_s] = doc2dct_references(doc)
@@ -69,7 +74,7 @@ module Fgdc2Geobl
 
   def doc2dc_rights(doc)
     # TODO - implement CAS auth, so we can work more correctly with Restricted material
-    return "Public"
+    # return "Public"
 
     # Access Constraints
     accconst = doc.xpath("//idinfo/accconst").text
@@ -105,12 +110,17 @@ module Fgdc2Geobl
     ###   12 possible keys.  
     ###   Which ones are we able to provide?
 
-    # Web Mapping Service (WMS) 
-    dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
-        APP_CONFIG['geoserver_url'] + '/wms/sde'
-    # Web Feature Service (WFS)
-    dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
-        APP_CONFIG['geoserver_url'] + '/sde/ows'
+    # Only Public content has been loaded into GeoServer.
+    # Restricted content is only available via Direct Download.
+    if @dc_rights == 'Public'
+      # Web Mapping Service (WMS) 
+      dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
+          APP_CONFIG['geoserver_url'] + '/wms/sde'
+      # Web Feature Service (WFS)
+      dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
+          APP_CONFIG['geoserver_url'] + '/sde/ows'
+    end
+
     # International Image Interoperability Framework (IIIF) Image API
     # Direct download file
     if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
