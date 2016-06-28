@@ -1,0 +1,24 @@
+
+// Follow styling suggestions from
+// http://geoblacklight.org/tutorial/2015/02/09/customize-your-application.html
+
+// To see all available variables:
+// https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_variables.scss
+
+// examples...
+// $navbar-height: 80px;
+// $brand-primary: #32cd32;
+
+
+$culDarkBlue:          #002B7F;
+$culDarkerBlue:        #002BAA;
+$culLightBlue:         #779BC3;
+$culLighterBlue:       #75AADB;
+
+
+/* Columbia adds dark blue Lweb bar on top */
+/* Set GeoBlacklight navbar to lighter grays */
+$navbar-inverse-bg:                #EEE;
+$navbar-inverse-link-color:        #777;
+$navbar-inverse-link-hover-color:  #333;
+

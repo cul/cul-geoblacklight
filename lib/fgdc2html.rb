@@ -1,10 +1,12 @@
 module Fgdc2Html
 
-  def fgdc2html(fgdc_file, fgdc_xml)
-
-    doc  = Nokogiri::XML(fgdc_xml) do |config|
-      config.strict.nonet
-    end
+  # def fgdc2html(fgdc_file, fgdc_xml)
+  # input args:
+  #   doc  -  nokogiri::XML::Document representing the FGDC XML
+  def fgdc2html(doc)
+    # doc  = Nokogiri::XML(fgdc_xml) do |config|
+    #   config.strict.nonet
+    # end
 
     return xsl_html.transform(doc).to_html
 

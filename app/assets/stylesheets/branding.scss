@@ -1,0 +1,46 @@
+
+/* 
+ * REDEFINE BLACKLIGHT STYLE
+ * Our logo.png is 520x75 (GeoData@Columbia)
+ * - adjust sizes to fit geodata logo proportionally
+ * - add "background-size" to scale
+ */
+
+#header-navbar {
+  .navbar-brand {  /* The main logo image for the Blacklight instance */
+  	//width: 150px;
+    //height: 50px;
+  	width: 312px;
+    height: 45px;
+	  background:transparent image_url($logo_image) no-repeat top left;
+    background-size: 312px 45px;
+	  display: inline-block;
+	  text-indent: 100%;
+	  white-space: nowrap;
+	  overflow: hidden;
+	  padding-right:0;
+	  margin-right:20px;
+	  padding-left: 0;
+  }
+}
+
+
+/*
+ * The core GeoBlacklight project sytles give Stanford a
+ * special colorized icon (icon-customization.scss).
+ * Undo that for Stanford, add it for Columbia.
+ * Also make our crown bigger - it's very squished in
+ * the geoblacklight-icons repo.
+ */
+.geoblacklight-stanford {
+  color: $gray-light;
+}
+.geoblacklight-columbia {
+  color: $culDarkBlue;
+  font-size: 150%;
+}
+
+
+
+
+
