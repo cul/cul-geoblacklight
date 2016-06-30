@@ -105,7 +105,7 @@ GEM
       responders
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
-    devise-guests (0.3.3)
+    devise-guests (0.5.0)
       devise
     devise_cas_authenticatable (1.5.0)
       devise (>= 1.2.0)
@@ -168,6 +168,7 @@ GEM
     multi_json (1.12.1)
     multipart-post (2.0.0)
     mysql2 (0.4.4)
+    net-ldap (0.14.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (3.2.0)
@@ -276,7 +277,7 @@ DEPENDENCIES
   capistrano-rvm (~> 0.1)
   coffee-rails (~> 4.1.0)
   devise
-  devise-guests (~> 0.3)
+  devise-guests
   devise_cas_authenticatable
   geo_combine
   geoblacklight
@@ -284,6 +285,7 @@ DEPENDENCIES
   jettywrapper
   jquery-rails
   mysql2
+  net-ldap
   rails (~> 4.2)
   rsolr (~> 1.0.6)
   sass-rails (~> 5.0)

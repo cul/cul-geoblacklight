@@ -234,7 +234,8 @@ class CatalogController < ApplicationController
 
     # CUL customizations
     config.show.document_actions.delete(:sms)
-    config.show.document_actions.delete(:bookmark)
+    # With authentication working, bookmarks are useful - leave them in
+    # config.show.document_actions.delete(:bookmark)
     config.show.document_actions.delete(:citation)
 
   end

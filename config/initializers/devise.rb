@@ -268,9 +268,8 @@ Devise.setup do |config|
   config.cas_logout_url = APP_CONFIG['cas_logout_url']
   config.cas_validate_url = APP_CONFIG['cas_validate_url']
 
-  # ...and if we don't do this?
-  # # And, we don't use the default 'username'
-  # config.cas_username_column = "login"
+  # And, we don't use the default 'username'
+  config.cas_username_column = "login"
 
   # More options from devise_cas_authenticatable...
 

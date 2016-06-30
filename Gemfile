@@ -67,12 +67,13 @@ gem 'jettywrapper'
 gem 'rsolr', '~> 1.0.6'
 
 gem 'devise'
-gem 'devise-guests', '~> 0.3'
-# CAS is ready.
+gem 'devise-guests'
 gem 'devise_cas_authenticatable'
 
 gem 'geo_combine'
 gem 'mysql2'
 
+# To fetch Columbia directory information
+gem 'net-ldap'
 
 
