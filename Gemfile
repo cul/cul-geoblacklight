@@ -59,12 +59,12 @@ group :development do
 end
 
 
-gem 'blacklight', '~> 5'
+gem 'blacklight'
 gem 'geoblacklight'
-gem 'blacklight_range_limit', '~> 5'
+gem 'blacklight_range_limit'
 
 gem 'jettywrapper'
-gem 'rsolr', '~> 1.0.6'
+gem 'rsolr'
 
 gem 'devise'
 gem 'devise-guests'
