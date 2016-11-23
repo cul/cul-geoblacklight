@@ -237,7 +237,11 @@ class CatalogController < ApplicationController
     config.basemap_provider = 'positron'
 
     # Configuration for autocomplete suggestor
-    config.autocomplete_enabled = true
+    # config.autocomplete_enabled = true
+    # Autocomplete uses Twitter Typeahead, which includes
+    # CSS which is incompatible with Safari.
+    # Turn off for now.
+    config.autocomplete_enabled = false
     config.autocomplete_path = 'suggest'
 
     # CUL customizations

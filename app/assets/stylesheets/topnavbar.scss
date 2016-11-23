@@ -1,0 +1,199 @@
+
+
+@font-face {
+  font-family: 'TrajanProRegular';
+  src: asset-url('trajanpro-regular-webfont.eot');
+  src: asset-url('trajanpro-regular-webfont.eot?#iefix') format('embedded-opentype'), asset-url('trajanpro-regular-webfont.woff') format('woff'), asset-url('trajanpro-regular-webfont.ttf') format('truetype'), asset-url('trajanpro-regular-webfont.svg#TrajanProRegular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+$culDarkBlue:          #002B7F;
+$culDarkerBlue:        #002BAA;
+$culLightBlue:         #779BC3;
+$culLighterBlue:       #75AADB;
+
+/* Background of the whole menubar */
+$bgDefault      : $culDarkBlue;
+$bgHighlight    : $culDarkBlue;
+/* Default color for the font - whiteish-gray */
+$colDefault     : #ecf0f1;
+/* Hover color for the font - white */
+$colHover       : #fff; 
+
+
+/* Red * /
+$bgDefault      : #e74c3c;
+$bgHighlight    : #c0392b;
+$colDefault     : #ecf0f1;
+$colHover       : #ffbbbc; /*/
+/* Green * /
+$bgDefault      : #2ecc71;
+$bgHighlight    : #27ae60;
+$colDefault     : #ecf0f1;
+$colHover       : #d1ffed; /*/
+/* Purple * /
+$bgDefault      : #9b59b6;
+$bgHighlight    : #8e44ad;
+$colDefault     : #ecf0f1;
+$colHover       : #ecdbff; /*/
+/* Orange * /
+$bgDefault      : #e67e22;
+$bgHighlight    : #d35400;
+$colDefault     : #ecf0f1;
+$colHover       : #ffe6d1; /*/
+
+
+/* --- Style --- */
+#topnavbar.navbar-default {
+
+    z-index: 2000;
+
+    background-color: $bgDefault;
+    border-color: $bgHighlight;
+    .container {
+      background-color: $bgDefault;
+    }
+    .navbar-brand {
+        color: $colDefault;
+        &:hover, &:focus {
+            color: $colHover; 
+        }}
+    .navbar-nav {
+        > li {
+            > a {
+                color: $colDefault;
+                &:hover, &:focus {
+                    color: $colHover;   }}}
+        .active {
+            > a, > a:hover, > a:focus {
+                color: $colHover;
+                background-color: $bgHighlight; }}
+        .open {
+            > a, > a:hover, > a:focus {
+                color: $colHover;
+                background-color: $bgHighlight;
+                .caret {
+                    border-top-color: $colHover;
+                    border-bottom-color: $colHover; }}}
+        > .dropdown {
+            .dropdown-menu {
+              background-color: $bgDefault;
+              > li {
+                > a {
+                  color: $colHover;}}
+              }
+            > a {
+                .caret {
+                    border-top-color: $colDefault;
+                    border-bottom-color: $colDefault; }
+                &:hover, &:focus {
+                    .caret {
+                        border-top-color: $colHover;
+                        border-bottom-color: $colHover; 
+                        }}}}}
+    .navbar-toggle {
+        border-color: $bgHighlight;
+        &:hover, &:focus {
+            background-color: $bgHighlight; }
+        .icon-bar {
+            background-color: $colDefault; }}}
+
+@media (max-width: 767px) {
+    #topnavbar.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: $colDefault;
+        &:hover, &:focus {
+            color: $colHover;
+            background-color: $bgHighlight; }}
+}
+
+.crowndown-nosearch .dropdown-menu li a:hover {
+  background-image: linear-gradient(to bottom, #08c, #0077b3);
+}
+
+/*#crowndown-nosearch a.menu {*/
+  
+/*#topnavbar {*/
+span.topbarlogo {
+  font-family: TrajanProRegular, trajan, serif;
+}
+
+
+// http://stackoverflow.com/questions/19576175/how-do-you-decrease-navbar-height
+.navbar-nav > li > a {padding-top:7px !important; padding-bottom:7px !important;}
+#crowndown-nosearch.navbar-nav > li > a {padding-top:5px !important; padding-bottom:3px !important;}
+.navbar {min-height:32px !important}
+.navbar-text { margin-top: 7px !important; margin-bottom: 7px !important;}
+
+
+
+/*
+
+#topnavbar.navbar {
+  .nav {
+    li.dropdown.open > .dropdown-toggle {
+      background-color: transparent;
+      // Bootstrap 3.3 -- Now need to set this also ?
+      background: transparent;
+    }
+  }
+}
+*/
+/*
+@media (max-width: 767px) {
+  .navbar {
+    .divider-vertical {
+      margin: 0 9px 1px 9px !important;
+    }
+  }
+  #crowndown a.menu, #crowndown-nosearch a.menu {
+    margin-left: 12px;
+  }
+}
+
+*/
+/*
+@media (max-width: 480px) {
+  .navbar .nav > li > a.dropdown-toggle {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+*/
+/*
+#topnavbar.navbar {
+  border-top: 5px solid #002b7f
+}
+
+*/
+/*
+@media (max-width: 799px) {
+  #crowndown a.menu, #crowndown-nosearch a.menu {
+    background-image: none;
+  }
+}
+
+*/
+/*
+@media (min-width: 1000px) {
+  .topbarlogo {
+    font-size: 123%;
+  }
+}
+
+*/
+
+.crown-icon {
+  position: relative;
+  top: -4px;
+}
+
+
+
+
+
+
+
+
