@@ -16,5 +16,5 @@ spec = Gem::Specification.find_by_name 'geo_combine'
 load "#{spec.gem_dir}/lib/tasks/geo_combine.rake"
 
 
-ZIP_URL = "https://github.com/projectblacklight/blacklight-jetty/archive/v4.10.3.zip"
-require 'jettywrapper'
+# ZIP_URL = "https://github.com/projectblacklight/blacklight-jetty/archive/v4.10.3.zip"
+# require 'jettywrapper'
