@@ -83,6 +83,7 @@ module Fgdc2Geobl
     return "Public" if accconst.match /None/i
     return "Restricted" if accconst.match /Columbia/i
     return "Restricted" if accconst.match /Restricted/i
+
     # Use Constraints
     useconst = doc.xpath("//idinfo/useconst").text
     return "Public" if accconst.match /Unrestricted/i
@@ -90,6 +91,7 @@ module Fgdc2Geobl
     return "Public" if accconst.match /None/i
     return "Restricted" if accconst.match /Columbia/i
     return "Restricted" if accconst.match /Restricted/i
+
     # Default
     return "Restricted"
   end
