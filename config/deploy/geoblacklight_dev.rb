@@ -7,11 +7,7 @@
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 
-# server 'bronte.cul.columbia.edu', user: 'deployer', roles: %w{app db web}
-server 'all-nginx-dev1.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
-# server 'geoblacklight-dev.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
-
-# set :deploy_to, '/var/www/my_app_name'
+server 'geoblacklight-dev.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
 set :deploy_to, '/opt/passenger/lito/geoblacklight_dev'
 
 
