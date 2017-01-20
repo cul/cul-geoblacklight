@@ -108,7 +108,8 @@ $colHover       : #ffe6d1; /*/
             background-color: $bgHighlight; }}
 }
 
-.crowndown-nosearch .dropdown-menu li a:hover {
+/*.crowndown-nosearch .dropdown-menu li a:hover {*/
+#topnavbar .navbar-nav .dropdown-menu li a:hover {
   background-image: linear-gradient(to bottom, #08c, #0077b3);
 }
 
