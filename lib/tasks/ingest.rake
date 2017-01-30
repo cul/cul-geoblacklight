@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'net/ssh'
 
 require 'fgdc2geobl'
 include Fgdc2Geobl
@@ -41,6 +42,112 @@ namespace :metadata do
       puts("Unzip unsuccessful")
       next
     end
+  end
+
+  desc "Validate that download links point to actual files"
+  task :validate_downloads, [:file_pattern] => :environment do |t, args|
+    file_pattern = args[:file_pattern] || "."
+
+    host = 'cunix.columbia.edu'
+    http_dir  = '/www/data/acis/eds/gis/images'
+    https_dir  = '/wwws/data/acis/eds/dgate/studies/C1301/data'
+
+    ssh_cmd = "ssh -l litoserv #{host} /bin/ls #{http_dir}"
+    output = `#{ssh_cmd}`
+    http_files = output.split("\n").sort
+
+    ssh_cmd = "ssh -l litoserv #{host} /bin/ls #{https_dir}"
+    output = `#{ssh_cmd}`
+    https_files = output.split("\n").sort
+
+    Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
+      next unless fgdc_file =~ /#{file_pattern}/
+
+      begin
+        fgdc_xml = File.read(fgdc_file)
+        nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
+          config.strict.nonet
+        end
+
+        download_link = nokogiri_doc.at_xpath("//idinfo/citation/citeinfo/onlink")
+        next unless download_link.present?
+        download_link = download_link.text.strip
+
+        # Validate download links in primary http web tree
+        if download_link =~ /http:..www.columbia.edu.acis.eds/
+          file = download_link.gsub('http://www.columbia.edu/acis/eds/gis/images/', '')
+          unless http_files.include?(file)
+            puts "ERROR: #{File.basename(fgdc_file)} has bad download link #{download_link}"
+          end
+        end
+
+        # Validate download links in primary https web tree
+        if download_link =~ /https:..www1.columbia.edu.sec.acis.eds/
+# puts "found secure link..."
+          file = download_link.gsub('https://www1.columbia.edu/sec/acis/eds/dgate/studies/C1301/data/', '')
+          unless https_files.include?(file)
+            puts "ERROR: #{File.basename(fgdc_file)} has bad download link #{download_link}"
+          end
+        end
+
+      rescue => ex
+        puts "Error processing #{fgdc_file}: " + ex.message
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+      end
+    }
+
+  end
+
+
+  desc "Validate that OpenGeoServer layer ids are valid"
+  task :validate_layers, [:file_pattern] => :environment do |t, args|
+    file_pattern = args[:file_pattern] || "."
+
+    capabilities_url = APP_CONFIG['geoserver_url'] +
+                       '/sde/ows?service=WFS&request=GetCapabilities'
+    capabilities_doc = Nokogiri::XML(open(capabilities_url))
+
+    layer_name_xpath = '//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name'
+    all_layer_names = []
+    capabilities_doc.xpath(layer_name_xpath).each { |name|
+      all_layer_names << name.text.strip
+    }
+
+    Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
+      next unless fgdc_file =~ /#{file_pattern}/
+
+      begin
+        fgdc_xml = File.read(fgdc_file)
+        fgdc_doc  = Nokogiri::XML(fgdc_xml) do |config|
+          config.strict.nonet
+        end
+
+        # We only expect public layers to be found in GeoServer
+        rights = doc2dc_rights(fgdc_doc)
+        next unless rights == 'Public'
+
+        # Raster layers are never loaded to GeoServer
+        geom_type = doc2layer_geom_type(fgdc_doc)
+        next if geom_type == 'Raster'
+
+        resdesc = fgdc_doc.xpath("//resdesc")
+        unless resdesc.present?
+          puts "ERROR: #{File.basename(fgdc_file)} missing resdesc"
+          next
+        end
+        resdesc = resdesc.text.strip
+        layer_name = "sde:columbia." + resdesc
+
+        unless all_layer_names.include?(layer_name)
+          puts "ERROR: #{File.basename(fgdc_file)} has resdesc #{resdesc} not found in GeoServer"
+        end
+
+      rescue => ex
+        puts "Error processing #{fgdc_file}: " + ex.message
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+      end
+    }
+
   end
 
   desc "Transform the FGDC XML to display HTML"
