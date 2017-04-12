@@ -31,7 +31,7 @@
       <% else %>
 
         <li>
-          <%= link_to t('blacklight.header_links.login'), new_user_session_path %>
+          <%= link_to t('blacklight.header_links.login'), user_omniauth_authorize_path(:saml) %>
         </li>
 
       <% end %>
