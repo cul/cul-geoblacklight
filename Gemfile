@@ -11,7 +11,7 @@ gem 'sass-rails', '~> 5.0'
 gem 'uglifier'
 
 # Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails'
 
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
@@ -57,15 +57,15 @@ group :development do
   gem 'spring'
 
   # Capistrano deployment
-  gem 'capistrano', '~> 3.0', require: false
+  gem 'capistrano', require: false
   # Rails and Bundler integrations were moved out from Capistrano 3
-  gem 'capistrano-rails',   '~> 1.1', require: false
-  gem 'capistrano-bundler', '~> 1.1', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
   # "idiomatic support for your preferred ruby version manager"
-  gem 'capistrano-rvm',   '~> 0.1', require: false
+  gem 'capistrano-rvm', require: false
   # The `deploy:restart` hook for passenger applications is now in a separate gem
   # Just add it to your Gemfile and require it in your Capfile.
-  gem 'capistrano-passenger',   '~> 0.1', require: false
+  gem 'capistrano-passenger', require: false
 
 end
 
