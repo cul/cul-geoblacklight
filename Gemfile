@@ -83,9 +83,9 @@ gem 'rsolr'
 # gem 'jettywrapper'
 
 
-gem 'devise'
-gem 'devise-guests'
-gem 'devise_cas_authenticatable'
+# Authentication
+gem 'devise', '~> 3.0'
+gem 'cul_omniauth'
 
 # Access to GeoCombine tools within our CUL GeoBlacklight app
 gem 'geo_combine'

@@ -1,0 +1,30 @@
+
+
+<h2>System Details</h2>
+
+<% system_details = ['RUBY_VERSION', 'Rails.version', 'Rails.env',
+   'request.protocol', 'request.fullpath', 'request.url', 'request.remote_addr',
+   'Process.pid', 'Process.uid', 'Etc.getpwuid(Process.uid).name',
+   'application_uptime'] %>
+
+<table class='table table-bordered table-hover table-condensed'>
+  <% system_details.each do |i| %>
+    <tr class='active'>
+      <td><%= i%></td>
+      <td><%= eval(i)%></td>
+    </tr>
+  <% end %>
+</table>
+
+
+<h2>Full APP_CONFIG</h2>
+<pre>
+  <%= APP_CONFIG.to_yaml %>
+</pre>
+
+<h2>Full ENV</h2>
+<pre>
+  <%= ENV.sort.to_h.to_yaml %>
+</pre>
+
+

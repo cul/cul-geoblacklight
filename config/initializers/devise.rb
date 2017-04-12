@@ -1,6 +1,9 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+
+  CulGeoblacklight::Application.configure_devise_omniauth(config)
+
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
@@ -230,7 +233,8 @@ Devise.setup do |config|
   # config.navigational_formats = ['*/*', :html]
 
   # The default HTTP method used to sign out a resource. Default is :delete.
-  config.sign_out_via = :get
+  # config.sign_out_via = :get
+  config.sign_out_via = :delete
 
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
@@ -260,42 +264,42 @@ Devise.setup do |config|
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = '/my_engine/users/auth'
 
-  # CAS is ready.
-  # Initializer configuration per:
-  #     https://github.com/nbudin/devise_cas_authenticatable
-  config.cas_base_url = APP_CONFIG['cas_base_url']
-  config.cas_login_url = APP_CONFIG['cas_login_url']
-  config.cas_logout_url = APP_CONFIG['cas_logout_url']
-  config.cas_validate_url = APP_CONFIG['cas_validate_url']
-
-  # And, we don't use the default 'username'
-  config.cas_username_column = "login"
-
-  # More options from devise_cas_authenticatable...
-
-  # The CAS specification allows for the passing of a follow URL to be displayed when
-  # a user logs out on the CAS server. RubyCAS-Server also supports redirecting to a
-  # URL via the destination param. Set either of these urls and specify either nil,
-  # 'destination' or 'follow' as the logout_url_param. If the urls are blank but
-  # logout_url_param is set, a default will be detected for the service.
-  # config.cas_destination_url = 'https://cas.myorganization.com'
-  # config.cas_follow_url = APP_CONFIG['cas_follow_url']
-  # config.cas_logout_url_param = 'follow'
-  config.cas_follow_url = APP_CONFIG['cas_destination_url']
-  config.cas_logout_url_param = 'destination'
-
-  # You can specify the name of the destination argument with the following option.
-  # e.g. the following option will change it from 'destination' to 'url'
-  # config.cas_destination_logout_param_name = 'url'
-  # *** CUIT wants this to be "service", and it must be a registered service.
-  # see:   https://cuit.columbia.edu/cas-authentication
-  config.cas_destination_logout_param_name = 'service'
-
-  # By default, devise_cas_authenticatable will create users.  If you would rather
-  # require user records to already exist locally before they can authenticate via
-  # CAS, uncomment the following line.
-  # config.cas_create_user = false
-  config.cas_create_user = true
+  # # CAS is ready.
+  # # Initializer configuration per:
+  # #     https://github.com/nbudin/devise_cas_authenticatable
+  # config.cas_base_url = APP_CONFIG['cas_base_url']
+  # config.cas_login_url = APP_CONFIG['cas_login_url']
+  # config.cas_logout_url = APP_CONFIG['cas_logout_url']
+  # config.cas_validate_url = APP_CONFIG['cas_validate_url']
+  # 
+  # # And, we don't use the default 'username'
+  # config.cas_username_column = "login"
+  # 
+  # # More options from devise_cas_authenticatable...
+  # 
+  # # The CAS specification allows for the passing of a follow URL to be displayed when
+  # # a user logs out on the CAS server. RubyCAS-Server also supports redirecting to a
+  # # URL via the destination param. Set either of these urls and specify either nil,
+  # # 'destination' or 'follow' as the logout_url_param. If the urls are blank but
+  # # logout_url_param is set, a default will be detected for the service.
+  # # config.cas_destination_url = 'https://cas.myorganization.com'
+  # # config.cas_follow_url = APP_CONFIG['cas_follow_url']
+  # # config.cas_logout_url_param = 'follow'
+  # config.cas_follow_url = APP_CONFIG['cas_destination_url']
+  # config.cas_logout_url_param = 'destination'
+  # 
+  # # You can specify the name of the destination argument with the following option.
+  # # e.g. the following option will change it from 'destination' to 'url'
+  # # config.cas_destination_logout_param_name = 'url'
+  # # *** CUIT wants this to be "service", and it must be a registered service.
+  # # see:   https://cuit.columbia.edu/cas-authentication
+  # config.cas_destination_logout_param_name = 'service'
+  # 
+  # # By default, devise_cas_authenticatable will create users.  If you would rather
+  # # require user records to already exist locally before they can authenticate via
+  # # CAS, uncomment the following line.
+  # # config.cas_create_user = false
+  # config.cas_create_user = true
 
   # You can enable Single Sign Out, which by default is disabled.
   # config.cas_enable_single_sign_out = true

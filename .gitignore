@@ -30,3 +30,5 @@ config/secrets.yml
 # Ignore other dotfiles
 .byebug_history
 
+# localhost-specific files
+TUNNELS.txt
