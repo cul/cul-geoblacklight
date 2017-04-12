@@ -74,6 +74,9 @@ gem 'blacklight'
 gem 'geoblacklight'
 gem 'blacklight_range_limit'
 
+# ssh used during rake tasks
+gem 'net-ssh'
+
 gem 'rsolr'
 
 # We don't use a local jetty/solr

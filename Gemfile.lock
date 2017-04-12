@@ -278,6 +278,7 @@ DEPENDENCIES
   jquery-rails
   mysql2
   net-ldap
+  net-ssh
   rails (~> 4.2)
   rsolr
   sass-rails (~> 5.0)
