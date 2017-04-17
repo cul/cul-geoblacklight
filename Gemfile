@@ -86,6 +86,8 @@ gem 'rsolr'
 # Authentication
 gem 'devise', '~> 3.0'
 gem 'cul_omniauth'
+# necessary to quiet a cul_omniauth exception
+gem 'rspec'
 
 # Access to GeoCombine tools within our CUL GeoBlacklight app
 gem 'geo_combine'

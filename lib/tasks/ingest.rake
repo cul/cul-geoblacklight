@@ -29,7 +29,7 @@ namespace :metadata do
       download = open(FGDC_METADATA_URL)
       IO.copy_stream(download, "#{fgdc_current}/metadata.zip")
       puts "Download successful."
-    rescue ex
+    rescue => ex
       puts "Download unsuccessful:  #{ex}"
       next
     end
@@ -91,8 +91,8 @@ namespace :metadata do
         end
 
       rescue => ex
-        puts "Error processing #{fgdc_file}: " + ex.message
-        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "ERROR: #{fgdc_file}: " + ex.message
+        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
 
@@ -132,19 +132,18 @@ namespace :metadata do
 
         resdesc = fgdc_doc.xpath("//resdesc")
         unless resdesc.present?
-          puts "ERROR: #{File.basename(fgdc_file)} missing resdesc"
+          puts "ERROR: public layer #{File.basename(fgdc_file)} missing resdesc"
           next
         end
         resdesc = resdesc.text.strip
         layer_name = "sde:columbia." + resdesc
 
         unless all_layer_names.include?(layer_name)
-          puts "ERROR: #{File.basename(fgdc_file)} has resdesc #{resdesc} not found in GeoServer"
+          puts "ERROR: public layer #{File.basename(fgdc_file)} has resdesc #{resdesc} not found in GeoServer"
         end
 
       rescue => ex
-        puts "Error processing #{fgdc_file}: " + ex.message
-        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "ERROR: #{fgdc_file}: " + ex.message
       end
     }
 
@@ -161,8 +160,12 @@ namespace :metadata do
       FileUtils.mkdir_p(fgdc_html_dir)
     end
 
+    note = " of files matching /#{file_pattern}/" if file_pattern != '.'
+    puts "Begining htmlize#{note}..."
+    htmlized = 0
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
+      puts " - #{File.basename(fgdc_file)}" if file_pattern != '.'
 
       begin
         fgdc_xml = File.read(fgdc_file)
@@ -177,11 +180,15 @@ namespace :metadata do
         # The HTML file will be name for the FGDC <resdesc> 
         html_file = "#{fgdc_html_dir}#{@resdesc}.html"
         File.write(html_file, fgdc_html + "\n")
+        htmlized = htmlized + 1
       rescue => ex
-        puts "Error processing #{fgdc_file}: " + ex.message
-        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "ERROR: #{fgdc_file}: " + ex.message
+        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
+
+    puts "Htmlized #{htmlized} files."
+
   end
 
   desc "Transform the FGDC XML to GeoBlacklight Schema XML"
@@ -224,8 +231,8 @@ namespace :metadata do
         File.write(geobl_file, geobl_json + "\n")
         transformed = transformed + 1
       rescue => ex
-        puts "Error processing #{fgdc_file}: " + ex.message
-        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "ERROR: #{fgdc_file}: " + ex.message
+        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
     puts "Transformed #{transformed} files."
@@ -255,8 +262,8 @@ namespace :metadata do
                     headers: { 'Content-Type' => 'application/json' }
         ingested = ingested + 1
       rescue => ex
-        puts "Error ingesting #{geobl_file}: " + ex.message
-        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "ERROR: ingesting #{geobl_file}: " + ex.message
+        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
     puts "Ingested #{ingested} files."
