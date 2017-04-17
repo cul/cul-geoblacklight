@@ -76,4 +76,8 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # turn off logging of view/parital rendering
+  config.action_view.logger = nil
+
 end
