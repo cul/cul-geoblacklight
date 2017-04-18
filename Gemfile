@@ -98,4 +98,5 @@ gem 'mysql2'
 # To fetch Columbia directory information
 gem 'net-ldap'
 
-
+# Crontab management
+gem 'whenever'
