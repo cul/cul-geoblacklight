@@ -15,6 +15,8 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-every :day at: '2pm' do
+# doesn't work
+# every :day at: '2pm' do
+every :day, at: '2pm' do
   rake 'metadata:download'
 end
