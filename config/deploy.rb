@@ -44,6 +44,8 @@ set :passenger_restart_with_touch, true
 # set :rvm_ruby_string, "2.1.5"
 set :rvm_ruby_version, 'geoblacklight'
 
+set :whenever_identifier, ->{ fetch(:stage) }
+
 namespace :deploy do
 
   after :restart, :clear_cache do

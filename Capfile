@@ -26,7 +26,6 @@ require 'capistrano/passenger'
 require "capistrano/scm/git"
 install_plugin Capistrano::SCM::Git
 
-set :whenever_environment, defer { stage }
 require "whenever/capistrano"
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
