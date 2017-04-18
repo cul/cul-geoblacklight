@@ -15,8 +15,19 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-# doesn't work
-# every :day at: '2pm' do
+# Runs on every host
 every :day, at: '2pm' do
   rake 'metadata:download'
+end
+
+if @environment == "geoblacklight_dev"
+    every :weekday, :at => '10pm' do
+        rake "foo:bar"
+    end
+end
+
+if @environment == "geoblacklight_test"
+    every :weekend, :at => '0pm' do
+        rake "arf:meow"
+    end
 end
