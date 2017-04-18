@@ -27,7 +27,7 @@ if @environment == "geoblacklight_dev"
 end
 
 if @environment == "geoblacklight_test"
-    every :weekend, :at => '0pm' do
+    every :weekend, :at => '0:0am' do
         rake "arf:meow"
     end
 end
