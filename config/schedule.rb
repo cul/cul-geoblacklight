@@ -16,18 +16,24 @@
 # end
 
 # Runs on every host
-every :day, at: '2pm' do
+every :monday, at: '2am' do
   rake 'metadata:download'
+  rake 'metadata:validate_downloads'
+  rake 'metadata:validate_layers'
+  rake 'metadata:htmlize'
+  rake 'metadata:transform'
+  # Not quite to the point of auto-updating
+  # rake 'metadata:ingest'
 end
 
 if @environment == "geoblacklight_dev"
     every :weekday, :at => '10pm' do
-        rake "foo:bar"
+        # rake "foo:bar"
     end
 end
 
 if @environment == "geoblacklight_test"
     every :weekend, :at => '0:0am' do
-        rake "arf:meow"
+        # rake "arf:meow"
     end
 end
