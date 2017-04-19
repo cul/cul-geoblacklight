@@ -16,11 +16,11 @@
 # end
 
 # Run on every host
-every(:monday, at: '1am') { rake 'metadata:download' }
-every :monday, at: '2am' do rake 'metadata:validate_downloads' end
-every :monday, at: '3am' do rake 'metadata:validate_layers' end
-every :monday, at: '4am' do rake 'metadata:htmlize' end
-every :monday, at: '5am' do rake 'metadata:transform' end
+every(:monday, at: '1am') {rake 'metadata:download'}
+every(:monday, at: '2am') {rake 'metadata:validate_downloads'}
+every(:monday, at: '3am') {rake 'metadata:validate_layers'}
+every(:monday, at: '4am') {rake 'metadata:htmlize'}
+every(:monday, at: '5am') {rake 'metadata:transform'}
 # Not quite to the point of auto-updating
 # every :monday, at: '6am' do rake 'metadata:ingest' end
 
