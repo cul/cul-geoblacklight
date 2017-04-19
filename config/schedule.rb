@@ -16,13 +16,13 @@
 # end
 
 # Run on every host
-every :monday, at: '1am' do rake 'metadata:download' end
+every(:monday, at: '1am') { rake 'metadata:download' }
 every :monday, at: '2am' do rake 'metadata:validate_downloads' end
-every :monday, at: '3am' { rake 'metadata:validate_layers' }
-every :monday, at: '4am' { rake 'metadata:htmlize' }
-every :monday, at: '5am' { rake 'metadata:transform' }
+every :monday, at: '3am' do rake 'metadata:validate_layers' end
+every :monday, at: '4am' do rake 'metadata:htmlize' end
+every :monday, at: '5am' do rake 'metadata:transform' end
 # Not quite to the point of auto-updating
-# every :monday, at: '6am' { rake 'metadata:ingest' }
+# every :monday, at: '6am' do rake 'metadata:ingest' end
 
 
 # Examples of per-environment cron commands
