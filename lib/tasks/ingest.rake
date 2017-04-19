@@ -98,7 +98,6 @@ namespace :metadata do
 
   end
 
-
   desc "Validate that OpenGeoServer layer ids are valid"
   task :validate_layers, [:file_pattern] => :environment do |t, args|
     file_pattern = args[:file_pattern] || "."
@@ -275,6 +274,7 @@ namespace :metadata do
     puts "Done."
 
   end
+
 end
 
 

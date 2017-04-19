@@ -15,25 +15,27 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-# Runs on every host
-every :monday, at: '2am' do
-  rake 'metadata:download'
-  rake 'metadata:validate_downloads'
-  rake 'metadata:validate_layers'
-  rake 'metadata:htmlize'
-  rake 'metadata:transform'
-  # Not quite to the point of auto-updating
-  # rake 'metadata:ingest'
-end
+# Run on every host
+every :monday, at: '1am' { rake 'metadata:download' }
+every :monday, at: '2am' { rake 'metadata:validate_downloads' }
+every :monday, at: '3am' { rake 'metadata:validate_layers' }
+every :monday, at: '4am' { rake 'metadata:htmlize' }
+every :monday, at: '5am' { rake 'metadata:transform' }
+# Not quite to the point of auto-updating
+# every :monday, at: '6am' { rake 'metadata:ingest' }
 
-if @environment == "geoblacklight_dev"
-    every :weekday, :at => '10pm' do
-        # rake "foo:bar"
-    end
-end
 
-if @environment == "geoblacklight_test"
-    every :weekend, :at => '0:0am' do
-        # rake "arf:meow"
-    end
-end
+# Examples of per-environment cron commands
+# 
+# if @environment == "geoblacklight_dev"
+#     every :weekday, :at => '10pm' do
+#         # rake "foo:bar"
+#     end
+# end
+# 
+# if @environment == "geoblacklight_test"
+#     every :weekend, :at => '0:0am' do
+#         # rake "arf:meow"
+#     end
+# end
+
