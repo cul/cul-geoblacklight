@@ -1,9 +1,14 @@
 # Use this file to easily define all of your cron jobs.
 # Learn more: http://github.com/javan/whenever
 
+# Load rails environment
+require File.expand_path('../config/environment', __dir__)
+
+# Set environment to current environment.
+set :environment, Rails.env
+
 # Give our jobs nice subject lines
 set :email_subject, "cron output"
-set :environment, Rails.env
 set :job_template, "mailifoutput -s ':email_subject (:environment)' -- /bin/bash -l -c ':job'"
 
 
