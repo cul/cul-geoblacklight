@@ -9,7 +9,7 @@
 
 # Give our jobs nice subject lines
 set :subject, "cron output"
-set :to, Etc.getpwuid(Process.uid).name
+set :to, 'litoserv'
 set :job_template, "/usr/local/bin/mailifoutput -s ':subject (@environment)' :to -- /bin/bash -l -c ':job'"
 
 
@@ -18,7 +18,7 @@ every :monday, at: '1am' do
   rake 'metadata:process', subject: 'GeoBL metadata:process output'
 end
 
-every :thursday, at: '4:45pm' do
+every :thursday, at: '4:55pm' do
   rake 'metadata:process', subject: 'GeoBL metadata:process output'
 end
 
