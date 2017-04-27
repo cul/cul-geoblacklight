@@ -9,7 +9,7 @@ set :environment, Rails.env
 
 # Give our jobs nice subject lines
 set :email_subject, "cron output"
-set :job_template, "mailifoutput -s ':email_subject (:environment)' -- /bin/bash -l -c ':job'"
+set :job_template, "/usr/local/bin/mailifoutput -s ':email_subject (:environment)' -- /bin/bash -l -c ':job'"
 
 
 # Run on every host - dev, test, prod
@@ -17,7 +17,7 @@ every :monday, at: '1am' do
   rake 'metadata:process', email_subject: 'GeoBL metadata:process'
 end
 
-every :thursday, at: '1:15pm' do
+every :thursday, at: '4:25pm' do
   rake 'metadata:process', email_subject: 'GeoBL metadata:process'
 end
 
