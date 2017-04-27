@@ -275,6 +275,27 @@ namespace :metadata do
 
   end
 
+  desc "Download, Validate, Transform, and Ingest Metadata"
+  task :process => :environment do
+    puts "=== metadata:download ==="
+    Rake::Task['metadata:download'].execute
+
+    puts "=== metadata:validate_downloads ==="
+    Rake::Task['metadata:validate_downloads'].execute
+
+    puts "=== metadata:validate_layers ==="
+    Rake::Task['metadata:validate_layers'].execute
+
+    puts "=== metadata:htmlize ==="
+    Rake::Task['metadata:htmlize'].execute
+
+    puts "=== metadata:transform ==="
+    Rake::Task['metadata:transform'].execute
+
+    puts "=== metadata:ingest ==="
+    Rake::Task['metadata:ingest'].execute
+  end
+
 end
 
 

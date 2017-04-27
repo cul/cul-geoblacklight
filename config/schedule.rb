@@ -1,28 +1,20 @@
 # Use this file to easily define all of your cron jobs.
 # Learn more: http://github.com/javan/whenever
-#
-# Example:
-#
-# set :output, "/path/to/my/cron_log.log"
-#
-# every 2.hours do
-#   command "/usr/bin/some_great_command"
-#   runner "MyModel.some_method"
-#   rake "some:great:rake:task"
-# end
-#
-# every 4.days do
-#   runner "AnotherModel.prune_old_records"
-# end
 
-# Run on every host
-every(:monday, at: '1am') {rake 'metadata:download'}
-every(:monday, at: '2am') {rake 'metadata:validate_downloads'}
-every(:monday, at: '3am') {rake 'metadata:validate_layers'}
-every(:monday, at: '4am') {rake 'metadata:htmlize'}
-every(:monday, at: '5am') {rake 'metadata:transform'}
-# Not quite to the point of auto-updating
-# every :monday, at: '6am' do rake 'metadata:ingest' end
+# Give our jobs nice subject lines
+set :email_subject, "cron output"
+set :environment, Rails.env
+set :job_template, "mailifoutput -s ':email_subject (:environment)' -- /bin/bash -l -c ':job'"
+
+
+# Run on every host - dev, test, prod
+every :monday, at: '1am' do
+  rake 'metadata:process', email_subject: 'GeoBL metadata:process'
+end
+
+every :thursday, at: '1:15pm' do
+  rake 'metadata:process', email_subject: 'GeoBL metadata:process'
+end
 
 
 # Examples of per-environment cron commands
