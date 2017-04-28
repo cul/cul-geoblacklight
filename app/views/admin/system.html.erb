@@ -5,7 +5,7 @@
 <% system_details = ['RUBY_VERSION', 'Rails.version', 'Rails.env',
    'request.protocol', 'request.fullpath', 'request.url', 'request.remote_addr',
    'Process.pid', 'Process.uid', 'Etc.getpwuid(Process.uid).name',
-   'application_uptime'] %>
+   'time_ago_in_words(BOOTED_AT)'] %>
 
 <table class='table table-bordered table-hover table-condensed'>
   <% system_details.each do |i| %>

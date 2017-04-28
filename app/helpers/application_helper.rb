@@ -8,8 +8,4 @@ module ApplicationHelper
     @document.direct_download.present?
   end
 
-  def application_uptime
-    time_ago_in_words(BOOTED_AT)
-  end
-
 end
