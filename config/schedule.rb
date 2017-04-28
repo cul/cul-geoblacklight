@@ -9,8 +9,8 @@ set :environment, Rails.env
 
 # Give our jobs nice subject lines
 set :subject, 'cron output'
-set :recipient, 'litoserv'
-set :job_template, "/usr/local/bin/mailifoutput -s ':subject (:environment)' :recipient -- /bin/bash -l -c ':job'"
+set :recipient, 'geodata@library.columbia.edu'
+set :job_template, "/usr/local/bin/mailifoutput -s ':subject (:environment)' :recipient /bin/bash -l -c ':job'"
 
 
 # Run on every host - dev, test, prod
@@ -18,9 +18,6 @@ every :monday, at: '1am' do
   rake 'metadata:process', subject: 'GeoData metadata:process output'
 end
 
-every :thursday, at: '5:05pm' do
-  rake 'metadata:process', subject: 'GeoData metadata:process output'
-end
 
 
 # Examples of per-environment cron commands

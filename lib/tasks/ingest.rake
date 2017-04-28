@@ -62,12 +62,15 @@ namespace :metadata do
 
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
+      fgdc_basename = File.basename(fgdc_file)
 
       begin
         fgdc_xml = File.read(fgdc_file)
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
+        # Parse doc to set @resdesc, etc.
+        set_variables(nokogiri_doc)
 
         download_link = nokogiri_doc.at_xpath("//idinfo/citation/citeinfo/onlink")
         next unless download_link.present?
@@ -77,7 +80,7 @@ namespace :metadata do
         if download_link =~ /http:..www.columbia.edu.acis.eds/
           file = download_link.gsub('http://www.columbia.edu/acis/eds/gis/images/', '')
           unless http_files.include?(file)
-            puts "ERROR: #{File.basename(fgdc_file)} has bad download link #{download_link}"
+            puts "ERROR: #{fgdc_basename} has bad download link #{download_link}"
           end
         end
 
@@ -86,7 +89,7 @@ namespace :metadata do
 # puts "found secure link..."
           file = download_link.gsub('https://www1.columbia.edu/sec/acis/eds/dgate/studies/C1301/data/', '')
           unless https_files.include?(file)
-            puts "ERROR: #{File.basename(fgdc_file)} has bad download link #{download_link}"
+            puts "ERROR: #{fgdc_basename} has bad download link #{download_link}"
           end
         end
 
@@ -112,33 +115,44 @@ namespace :metadata do
       all_layer_names << name.text.strip
     }
 
+    # Track resdesc-to-FGDC mapping, to detect duplicate resdescs
+    resdesc_map = {}
+
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
+      fgdc_basename = File.basename(fgdc_file)
 
       begin
         fgdc_xml = File.read(fgdc_file)
-        fgdc_doc  = Nokogiri::XML(fgdc_xml) do |config|
+        nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
+        end
+        # Parse doc to set @resdesc, etc.
+        set_variables(nokogiri_doc)
+
+        if resdesc_map[@resdesc].present?
+          puts "ERROR: resdesc '#{@resdesc}' used in both #{fgdc_basename} and #{resdesc_map[@resdesc]}"
+          next
+        else
+          resdesc_map[@resdesc] = fgdc_basename
         end
 
         # We only expect public layers to be found in GeoServer
-        rights = doc2dc_rights(fgdc_doc)
+        rights = doc2dc_rights(nokogiri_doc)
         next unless rights == 'Public'
 
         # Raster layers are never loaded to GeoServer
-        geom_type = doc2layer_geom_type(fgdc_doc)
+        geom_type = doc2layer_geom_type(nokogiri_doc)
         next if geom_type == 'Raster'
 
-        resdesc = fgdc_doc.xpath("//resdesc")
-        unless resdesc.present?
-          puts "ERROR: public layer #{File.basename(fgdc_file)} missing resdesc"
+        unless @resdesc.present?
+          puts "ERROR: public layer #{fgdc_basename} missing resdesc"
           next
         end
-        resdesc = resdesc.text.strip
-        layer_name = "sde:columbia." + resdesc
+        layer_name = "sde:columbia." + @resdesc
 
         unless all_layer_names.include?(layer_name)
-          puts "ERROR: public layer #{File.basename(fgdc_file)} has resdesc #{resdesc} not found in GeoServer"
+          puts "ERROR: resdesc '#{@resdesc}' (#{layer_name}) not found in GeoServer (public layer #{fgdc_basename})"
         end
 
       rescue => ex
@@ -164,14 +178,16 @@ namespace :metadata do
     htmlized = 0
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
-      puts " - #{File.basename(fgdc_file)}" if file_pattern != '.'
+      fgdc_basename = File.basename(fgdc_file)
+
+      puts " - #{fgdc_basename}" if file_pattern != '.'
 
       begin
         fgdc_xml = File.read(fgdc_file)
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
-        # Set some instance variables for repeated reuse
+        # Parse doc to set @resdesc, etc.
         set_variables(nokogiri_doc)
 
         fgdc_html = fgdc2html(nokogiri_doc)
@@ -207,23 +223,20 @@ namespace :metadata do
     transformed = 0
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
       next unless fgdc_file =~ /#{file_pattern}/
+      fgdc_basename = File.basename(fgdc_file)
 
       begin
-        puts " - #{File.basename(fgdc_file)}" if file_pattern != '.'
+        puts " - #{fgdc_basename}" if file_pattern != '.'
         # The GeoBlacklight schema file will be the same basename, but json
         fgdc_xml = File.read(fgdc_file)
-
-
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
-        # Set some instance variables for repeated reuse
+        # Parse doc to set @resdesc, etc.
         set_variables(nokogiri_doc)
 
-        # geobl_json = fgdc2geobl(fgdc_file, fgdc_xml)
         geobl_json = fgdc2geobl(nokogiri_doc)
 
-        # geobl_file = "#{geobl_current}#{File.basename(fgdc_file, '.xml')}.json"
         doc_dir = "#{geobl_current}#{@resdesc}"
         FileUtils.mkdir_p(doc_dir)
         geobl_file = "#{doc_dir}/#{json_filename}"
@@ -252,7 +265,6 @@ namespace :metadata do
       next unless geobl_file =~ /#{file_pattern}/
 
       begin
-        # puts " - #{File.basename(geobl_file)}" if file_pattern != '.'
         label = geobl_file.sub(/\/#{json_filename}/, '').sub(/.*\//, '')
         puts " - #{label}" if file_pattern != '.'
         geobl_json = JSON.parse(File.read(geobl_file))
@@ -277,25 +289,35 @@ namespace :metadata do
 
   desc "Download, Validate, Transform, and Ingest Metadata"
   task :process => :environment do
-    puts "=== metadata:download ==="
+    startTime = Time.now
+    puts_datestamp "==== START metadata:process ===="
+
+    puts_datestamp "---- metadata:download ----"
     Rake::Task['metadata:download'].execute
 
-    puts "=== metadata:validate_downloads ==="
+    puts_datestamp "---- metadata:validate_downloads ----"
     Rake::Task['metadata:validate_downloads'].execute
 
-    puts "=== metadata:validate_layers ==="
+    puts_datestamp "---- metadata:validate_layers ----"
     Rake::Task['metadata:validate_layers'].execute
 
-    puts "=== metadata:htmlize ==="
+    puts_datestamp "---- metadata:htmlize ----"
     Rake::Task['metadata:htmlize'].execute
 
-    puts "=== metadata:transform ==="
+    puts_datestamp "---- metadata:transform ----"
     Rake::Task['metadata:transform'].execute
 
-    puts "=== metadata:ingest ==="
+    puts_datestamp "---- metadata:ingest ----"
     Rake::Task['metadata:ingest'].execute
+
+    elapsed_seconds = (Time.now - startTime).round
+    min, sec = elapsed_seconds.divmod(60)
+    elapsed_note = "(#{min} min, #{sec} sec)"
+    puts_datestamp "==== END metadata:process #{elapsed_note} ===="
   end
 
 end
 
-
+def puts_datestamp(msg)
+  puts "#{Time.now}   #{msg}"
+end
