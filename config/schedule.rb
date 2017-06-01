@@ -14,7 +14,7 @@ set :job_template, "/usr/local/bin/mailifoutput -s ':subject (:environment)' :re
 
 
 # Run on every host - dev, test, prod
-every :monday, at: '1am' do
+every :day, at: '1am' do
   rake 'metadata:process', subject: 'GeoData metadata:process output'
 end
 
