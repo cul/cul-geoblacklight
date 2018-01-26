@@ -304,17 +304,16 @@ namespace :metadata do
     puts "Ingested #{ingested} files."
 
     puts "Committing..."
-    solr.update :data => '<commit/>'
+    solr.commit
     puts "Optimizing..."
-    solr.update :data => '<optimize/>'
+    solr.optimize
     puts "Done."
-
   end
   
   desc "Delete stale records from the Solr search index"
   task :prune_index => :environment do
     puts "Connecting to Solr..."
-    solr = RSolr.connect :url => Blacklight.connection_config[:url]
+    solr = RSolr.connect url: Blacklight.connection_config[:url]
     puts "solr=#{solr}"
 
     if ENV['STALE_DAYS'] && ENV['STALE_DAYS'].to_i < 2
@@ -324,18 +323,16 @@ namespace :metadata do
     end
     stale = (ENV['STALE_DAYS'] || 21).to_i
     query = "timestamp:[* TO NOW/DAY-#{stale}DAYS] AND dct_provenance_s:Columbia"
-    command = "<delete><query>#{query}</query></delete>"
 
     puts "Pruning..."
     puts "(#{query})"
-    solr.update data: command
+    solr.delete_by_query query
 
     puts "Committing..."
-    solr.update data: '<commit/>'
+    solr.commit
     puts "Optimizing..."
-    solr.update data: '<optimize/>'
+    solr.optimize
     puts "Done."
-
   end
 
   desc "Download, Validate, Transform, and Ingest Metadata"
