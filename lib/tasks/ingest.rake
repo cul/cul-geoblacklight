@@ -8,6 +8,7 @@ require 'fgdc2html'
 include Fgdc2Html
 
 # Keep one older iteration - very useful for debugging
+tmpdir = '/tmp'
 fgdc_current = File.join(Rails.root, "public/metadata/fgdc/current/")
 fgdc_old = File.join(Rails.root, "public/metadata/fgdc/old/")
 fgdc_html_dir = File.join(Rails.root, "public/metadata/fgdc/html/")
@@ -20,20 +21,39 @@ namespace :metadata do
   task :download => :environment do
     FGDC_METADATA_URL = APP_CONFIG['fgdc_metadata_url']
 
-    FileUtils.rm_rf(fgdc_old)
-    FileUtils.mv(fgdc_current, fgdc_old) if File.exists?(fgdc_current)
-    FileUtils.mkdir_p(fgdc_current)
-
     begin
       puts "Downloading #{FGDC_METADATA_URL}..."
       download = open(FGDC_METADATA_URL)
-      IO.copy_stream(download, "#{fgdc_current}/metadata.zip")
+      IO.copy_stream(download, "#{tmpdir}/metadata.zip")
       puts "Download successful."
     rescue => ex
       puts "Download unsuccessful:  #{ex}"
       next
     end
 
+    # puts "Comparing to previous download..."
+    old_file_size = File.size("#{fgdc_current}/metadata.zip")
+    new_file_size = File.size("#{tmpdir}/metadata.zip")
+    # puts "old_file_size=[#{old_file_size}]"
+    # puts "new_file_size=[#{new_file_size}]"
+    diff = (new_file_size - old_file_size).to_f
+    delta = ((diff / old_file_size) * 100).to_i
+    # puts "delta=[#{delta}]"
+    puts "New metadata file size is #{delta}% change from previous file size."
+    
+    diff = (ENV['FGDC_DIFF'] || 10).to_i
+    if delta.abs > diff
+      puts "ERROR: percentage difference (#{delta}%) greater than limit (#{diff}%)"
+      puts "Use environment variable $FGDC_DIFF to override diff percentage threshold."
+      abort "Aborting."
+    end
+
+    puts "Moving metadata.zip to #{fgdc_current}..."
+
+    FileUtils.rm_rf(fgdc_old)
+    FileUtils.mv(fgdc_current, fgdc_old) if File.exists?(fgdc_current)
+    FileUtils.mkdir_p(fgdc_current)
+    FileUtils.mv("#{tmpdir}/metadata.zip", "#{fgdc_current}/metadata.zip")
 
     puts "Unzipping metadata.zip..."
     if system("unzip -q -n #{fgdc_current}/*zip -d #{fgdc_current}")
@@ -129,6 +149,10 @@ namespace :metadata do
         end
         # Parse doc to set @resdesc, etc.
         set_variables(nokogiri_doc)
+        if @resdesc.match /[^\w\-]/
+          puts "ERROR: resdesc '#{@resdesc}' contains invalid character(s)  (#{fgdc_basename})"
+          next
+        end
 
         if resdesc_map[@resdesc].present?
           puts "ERROR: resdesc '#{@resdesc}' used in both #{fgdc_basename} and #{resdesc_map[@resdesc]}"
@@ -152,7 +176,7 @@ namespace :metadata do
         layer_name = "sde:columbia." + @resdesc
 
         unless all_layer_names.include?(layer_name)
-          puts "ERROR: resdesc '#{@resdesc}' (#{layer_name}) not found in GeoServer (public layer #{fgdc_basename})"
+          puts "ERROR: resdesc '#{@resdesc}' (#{layer_name}) not found in GeoServer (#{fgdc_basename})"
         end
 
       rescue => ex
@@ -286,6 +310,33 @@ namespace :metadata do
     puts "Done."
 
   end
+  
+  desc "Delete stale records from the Solr search index"
+  task :prune_index => :environment do
+    puts "Connecting to Solr..."
+    solr = RSolr.connect :url => Blacklight.connection_config[:url]
+    puts "solr=#{solr}"
+
+    if ENV['STALE_DAYS'] && ENV['STALE_DAYS'].to_i < 2
+      puts "ERROR: Environment variable STALE_DAYS set to [#{STALE_DAYS}]"
+      puts "ERROR: Should be > 1, or unset to allow default setting."
+      puts "ERROR: Skipping prune_index step."
+    end
+    stale = (ENV['STALE_DAYS'] || 21).to_i
+    query = "timestamp:[* TO NOW/DAY-#{stale}DAYS] AND dct_provenance_s:Columbia"
+    command = "<delete><query>#{query}</query></delete>"
+
+    puts "Pruning..."
+    puts "(#{query})"
+    solr.update data: command
+
+    puts "Committing..."
+    solr.update data: '<commit/>'
+    puts "Optimizing..."
+    solr.update data: '<optimize/>'
+    puts "Done."
+
+  end
 
   desc "Download, Validate, Transform, and Ingest Metadata"
   task :process => :environment do
@@ -309,6 +360,9 @@ namespace :metadata do
 
     puts_datestamp "---- metadata:ingest ----"
     Rake::Task['metadata:ingest'].execute
+
+    puts_datestamp "---- metadata:prune_index ----"
+    Rake::Task['metadata:prune_index'].execute
 
     elapsed_seconds = (Time.now - startTime).round
     min, sec = elapsed_seconds.divmod(60)
