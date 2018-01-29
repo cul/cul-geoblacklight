@@ -71,7 +71,7 @@ end
 
 
 gem 'blacklight'
-gem 'geoblacklight'
+gem 'geoblacklight', '~> 1.5.0'
 gem 'blacklight_range_limit'
 
 # ssh used during rake tasks
