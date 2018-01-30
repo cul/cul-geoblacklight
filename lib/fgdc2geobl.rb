@@ -115,12 +115,16 @@ module Fgdc2Geobl
     # Only Public content has been loaded into GeoServer.
     # Restricted content is only available via Direct Download.
     if @dc_rights == 'Public'
-      # Web Mapping Service (WMS) 
-      dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
-          APP_CONFIG['geoserver_url'] + '/wms/sde'
-      # Web Feature Service (WFS)
-      dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
-          APP_CONFIG['geoserver_url'] + '/sde/ows'
+      # AND - Raster data is NEVER loaded into GeoServer.
+      layer_geom_type = doc2layer_geom_type(doc)
+      unless layer_geom_type == 'Raster'
+        # Web Mapping Service (WMS) 
+        dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
+            APP_CONFIG['geoserver_url'] + '/wms/sde'
+        # Web Feature Service (WFS)
+        dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
+            APP_CONFIG['geoserver_url'] + '/sde/ows'
+      end
     end
 
     # International Image Interoperability Framework (IIIF) Image API
