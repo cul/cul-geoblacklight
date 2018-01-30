@@ -139,8 +139,10 @@ namespace :metadata do
     resdesc_map = {}
 
     Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
+      # puts "fgdc_file: #{fgdc_file}" if ENV['DEBUG']
       next unless fgdc_file =~ /#{file_pattern}/
       fgdc_basename = File.basename(fgdc_file)
+      puts "validating fgdc_basename: #{fgdc_basename}" if ENV['DEBUG']
 
       begin
         fgdc_xml = File.read(fgdc_file)
@@ -167,6 +169,7 @@ namespace :metadata do
 
         # Raster layers are never loaded to GeoServer
         geom_type = doc2layer_geom_type(nokogiri_doc)
+        puts "geom_type: #{geom_type}" if ENV['DEBUG']
         next if geom_type == 'Raster'
 
         unless @resdesc.present?
