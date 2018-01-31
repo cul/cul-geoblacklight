@@ -17,7 +17,11 @@ env 'PATH', '/bin:/usr/bin:/home/litoserv/.rvm/wrappers/geoblacklight'
 
 # Run on every host - dev, test, prod
 every :day, at: '1am' do
-  rake 'metadata:process', subject: 'GeoData metadata:process output'
+  rake 'metadata:process', subject: 'GeoData metadata:process'
+end
+
+every :day, at: '2am' do
+  rake 'opengeometadata:process', subject: 'GeoData opengeometadata:process'
 end
 
 
