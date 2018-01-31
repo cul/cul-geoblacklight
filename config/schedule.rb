@@ -12,14 +12,17 @@ set :subject, 'cron output'
 set :recipient, 'geodata@library.columbia.edu'
 set :job_template, "/usr/local/bin/mailifoutput -s ':subject (:environment)' :recipient /bin/bash -l -c ':job'"
 
+env 'PATH', '/bin:/usr/bin:/home/litoserv/.rvm/wrappers/geoblacklight'
+
+# Rake jobs should use the GeoBlacklight verion of Ruby, not the rvm default
+job_type :rake,    "cd /opt/passenger/lito/geoblacklight_dev/current && :environment_variable=:environment ~/.rvm/wrappers/geoblacklight/bundle exec rake :task --silent :output"
+
 
 # Run on every host - dev, test, prod
 every :day, at: '1am' do
   rake 'metadata:process', subject: 'GeoData metadata:process output'
 end
 
-# Rake jobs should use the GeoBlacklight verion of Ruby, not the rvm default
-job_type :rake,    "cd :path && :environment_variable=:environment ~/.rvm/wrappers/geoblacklight/bundle exec rake :task --silent :output"
 
 
 # Examples of per-environment cron commands
