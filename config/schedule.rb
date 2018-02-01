@@ -12,8 +12,8 @@ set :subject, 'cron output'
 set :recipient, 'geodata@library.columbia.edu'
 set :job_template, "/usr/local/bin/mailifoutput -s ':subject (:environment)' :recipient /bin/bash -l -c ':job'"
 
-# Rake jobs should use the GeoBlacklight version of Ruby commands
-env 'PATH', '/bin:/usr/bin:/home/litoserv/.rvm/wrappers/geoblacklight'
+# Rake jobs need to use the GeoBlacklight verion of Ruby commands
+set :bundle_command, '~/.rvm/wrappers/geoblacklight/bundle exec'
 
 # Run on every host - dev, test, prod
 every :day, at: '1am' do
