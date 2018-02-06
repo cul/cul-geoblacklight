@@ -1,8 +1,8 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.2'
+gem 'rails', '~> 5.0'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
@@ -67,11 +67,13 @@ group :development do
   # Just add it to your Gemfile and require it in your Capfile.
   gem 'capistrano-passenger', require: false
 
+  # Rails 5 requirement
+  gem 'listen'
 end
 
 
 gem 'blacklight'
-gem 'geoblacklight', '~> 1.5.0'
+gem 'geoblacklight'
 gem 'blacklight_range_limit'
 
 # ssh used during rake tasks
@@ -84,8 +86,12 @@ gem 'rsolr'
 
 
 # Authentication
-gem 'devise', '~> 3.0'
-gem 'cul_omniauth'
+# gem 'devise', '~> 3.0'
+gem 'devise'
+
+# gem 'cul_omniauth'
+gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
+
 # necessary to quiet a cul_omniauth exception
 gem 'rspec'
 
