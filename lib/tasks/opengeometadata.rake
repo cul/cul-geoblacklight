@@ -17,7 +17,7 @@ namespace :opengeometadata do
   task :fetch_all=> :environment do
     puts_datestamp "---- metadata:fetch_all ----"
     repos.each do |repo|
-      printf("Updating %s\n", repo)
+      printf("-- Updating %s --\n", repo)
       Rake::Task["opengeometadata:fetch"].reenable
       Rake::Task["opengeometadata:fetch"].invoke(repo)
     end
@@ -26,7 +26,7 @@ namespace :opengeometadata do
   desc 'Fetch a single OpenGeoMetadata repo (create or update)'
   task :fetch, [:repo] => :environment do |t, args|
     unless repo = args[:repo]
-      puts "must pass input arg :repo (e.g.: rake opengeometadata:fetch[edu.nyu])" 
+      puts "Must pass input arg :repo (e.g.: rake opengeometadata:fetch[edu.nyu])" 
       next
     end
     github = "https://github.com/OpenGeoMetadata/#{repo}.git"
@@ -34,10 +34,10 @@ namespace :opengeometadata do
     FileUtils.mkdir_p(ogm_path)
 
     if Dir.exist?("#{ogm_path}/#{repo}")
-      puts "pulling #{repo}"
+      puts "Pulling #{repo}"
       system "cd #{ogm_path}/#{repo} && git pull origin"
     else
-      puts "cloning #{repo}"
+      puts "Cloning #{repo}"
       system "cd #{ogm_path} && git clone --depth 1 #{github}"
     end
   end
@@ -46,7 +46,7 @@ namespace :opengeometadata do
   task :ingest_all=> :environment do
     puts_datestamp "---- metadata:ingest_all ----"
     repos.each do |repo|
-      printf("Ingesting %s\n", repo)
+      printf("-- Ingesting %s --\n", repo)
       Rake::Task["opengeometadata:ingest"].reenable
       Rake::Task["opengeometadata:ingest"].invoke(repo)
     end
@@ -55,7 +55,7 @@ namespace :opengeometadata do
   desc 'Ingest a single OpenGeoMetadata repo'
   task :ingest, [:repo] => :environment do |t, args|
     unless repo = args[:repo]
-      puts "must pass input arg :repo (e.g.: rake opengeometadata:ingest[edu.nyu])" 
+      puts "Must pass input arg :repo (e.g.: rake opengeometadata:ingest[edu.nyu])" 
       next
     end
 
@@ -95,7 +95,7 @@ namespace :opengeometadata do
   task :prune_all=> :environment do
     puts_datestamp "---- metadata:prune_all ----"
     repos.each do |repo|
-      printf("Pruning %s\n", repo)
+      printf("-- Pruning %s\n", repo)
       Rake::Task["opengeometadata:prune"].reenable
       Rake::Task["opengeometadata:prune"].invoke(repo)
     end
@@ -105,7 +105,7 @@ namespace :opengeometadata do
   desc "Delete stale records from the Solr search index"
   task :prune, [:repo] => :environment do |t, args|
     unless repo = args[:repo]
-      puts "must pass input arg :repo (e.g.: rake opengeometadata:prune[edu.nyu])" 
+      puts "Must pass input arg :repo (e.g.: rake opengeometadata:prune[edu.nyu])" 
       next
     end
 
