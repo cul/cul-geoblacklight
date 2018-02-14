@@ -71,8 +71,8 @@ group :development do
   gem 'listen'
 end
 
-
-gem 'blacklight'
+# gem 'blacklight'
+gem 'blacklight', '~> 6.11.0'
 gem 'geoblacklight'
 gem 'blacklight_range_limit'
 
