@@ -87,7 +87,7 @@ gem 'rsolr'
 
 # Authentication
 # gem 'devise', '~> 3.0'
-gem 'devise'
+gem 'devise', '~> 4.3.0'
 
 # gem 'cul_omniauth'
 gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
