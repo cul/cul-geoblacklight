@@ -9,24 +9,6 @@ GIT
       omniauth-cas
       rails (~> 5.0)
 
-PATH
-  remote: /Users/marquis/src/geoblacklight
-  specs:
-    geoblacklight (1.8.0)
-      blacklight (~> 6.11)
-      coderay
-      config
-      deprecation
-      faraday
-      faraday_middleware
-      font-awesome-rails
-      geo_combine (>= 0.3)
-      geoblacklight-icons (>= 0.2)
-      handlebars_assets
-      leaflet-rails (~> 0.7.3)
-      mime-types
-      rails (~> 5.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -186,6 +168,20 @@ GEM
       rsolr
       sanitize
       thor
+    geoblacklight (1.8.0)
+      blacklight (~> 6.11)
+      coderay
+      config
+      deprecation
+      faraday
+      faraday_middleware
+      font-awesome-rails
+      geo_combine (>= 0.3)
+      geoblacklight-icons (>= 0.2)
+      handlebars_assets
+      leaflet-rails (~> 0.7.3)
+      mime-types
+      rails (~> 5.0)
     geoblacklight-icons (1.2.0)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
@@ -373,7 +369,7 @@ DEPENDENCIES
   cul_omniauth!
   devise (~> 4.3.0)
   geo_combine
-  geoblacklight!
+  geoblacklight
   jbuilder (~> 2.0)
   jquery-rails
   listen
