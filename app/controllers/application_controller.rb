@@ -5,7 +5,11 @@ class ApplicationController < ActionController::Base
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
+  # protect_from_forgery with: :exception
+  # TODO - A pending GeoBlacklight upgrade (2.0) should
+  # make this unnecessary.  See "Skip auth token" in:
+  #   https://github.com/geoblacklight/geoblacklight/pull/553
+  protect_from_forgery with: :null_session
 
 
   def layout_name

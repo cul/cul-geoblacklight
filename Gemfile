@@ -71,9 +71,12 @@ group :development do
   gem 'listen'
 end
 
-# gem 'blacklight'
-gem 'blacklight', '~> 6.11.0'
-gem 'geoblacklight'
+gem 'blacklight'
+
+# DEBUG locally
+gem 'geoblacklight', path: "/Users/marquis/src/geoblacklight"
+# gem 'geoblacklight'
+
 gem 'blacklight_range_limit'
 
 # ssh used during rake tasks
