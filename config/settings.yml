@@ -38,10 +38,9 @@ INSTITUTION: 'Columbia'
 
 # Metadata shown in tool panel
 METADATA_SHOWN:
-  - 'html'
+  - 'mods'
   - 'fgdc'
   - 'iso19139'
-  - 'mods'
 
 # (For external Download) timeout and open_timeout parameters for Faraday
 TIMEOUT_DOWNLOAD: 16

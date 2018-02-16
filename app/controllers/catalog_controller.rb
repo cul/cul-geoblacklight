@@ -35,10 +35,6 @@ class CatalogController < ApplicationController
     # Configure the index document presenter.
     config.index.document_presenter_class = Geoblacklight::DocumentPresenter
 
-    # # Custom GeoBlacklight fields which currently map to GeoBlacklight-Schema
-    # # v0.3.2
-    # config.wxs_identifier_field = 'layer_id_s'
-
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
     #
@@ -83,12 +79,6 @@ class CatalogController < ApplicationController
     config.add_facet_field Settings.FIELDS.PART_OF, :label => 'Collection', :limit => 8
 
     config.add_facet_field Settings.FIELDS.YEAR, :label => 'Year', :limit => 10
-    # config.add_facet_field 'solr_year_i', :label => 'Year', :limit => 10, :range => {
-    #   # :num_segments => 6,
-    #   # :assumed_boundaries => [1100, 2015]
-    #   :assumed_boundaries => [1100, Time.now.year]
-    #   # :segments => true
-    # }
 
     config.add_facet_field Settings.FIELDS.RIGHTS, label: 'Access', limit: 8, partial: "icon_facet"
     config.add_facet_field Settings.FIELDS.GEOM_TYPE, label: 'Data type', limit: 8, partial: "icon_facet"
@@ -231,7 +221,6 @@ class CatalogController < ApplicationController
     # Configure basemap provider for GeoBlacklight maps (uses https only basemap
     # providers with open licenses)
     # Valid basemaps include:
-    # 'mapquest' http://developer.mapquest.com/web/products/open/map
     # 'positron' http://cartodb.com/basemaps/
     # 'darkMatter' http://cartodb.com/basemaps/
     config.basemap_provider = 'positron'

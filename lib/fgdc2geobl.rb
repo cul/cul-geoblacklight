@@ -138,9 +138,12 @@ module Fgdc2Geobl
     # Metadata in HTML
     dct_references['http://www.w3.org/1999/xhtml'] =
         APP_CONFIG['display_urls']['html'] + "/#{@resdesc}.html"
-    # Metadata in ISO 19139
-    dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
-        APP_CONFIG['display_urls']['iso19139'] + "/#{@resdesc}.xml"
+    # # Metadata in ISO 19139
+    # dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
+    #     APP_CONFIG['display_urls']['iso19139'] + "/#{@resdesc}.xml"
+    # Metadata in FGDC
+    dct_references['http://www.opengis.net/cat/csw/csdgm'] =
+        APP_CONFIG['display_urls']['fgdc'] + "/#{@resdesc}.xml"
     # Metadata in MODS
     # ArcGIS FeatureLayer
     # ArcGIS TiledMapLayer
