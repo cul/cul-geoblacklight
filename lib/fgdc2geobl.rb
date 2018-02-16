@@ -3,8 +3,9 @@ module Fgdc2Geobl
   # Use the file-name to create reference to html version of FGDC
   # def fgdc2geobl(fgdc_file, fgdc_xml)
   # input args:
+  #   fgdc_file - original arbitrary XML filename, does NOT equal resdesc
   #   doc  -  nokogiri::XML::Document representing the FGDC XML
-  def fgdc2geobl(doc)
+  def fgdc2geobl(fgdc_file, doc)
     # doc  = Nokogiri::XML(fgdc_xml) do |config|
     #   config.strict.nonet
     # end
@@ -27,8 +28,7 @@ module Fgdc2Geobl
     # layer[:dc_rights_s] = doc2dc_rights(doc)
     layer[:dc_rights_s] = @dc_rights
     layer[:dct_provenance_s] = doc2dct_provenance(doc)
-    # layer[:dct_references_s] = doc2dct_references(fgdc_file, doc)
-    layer[:dct_references_s] = doc2dct_references(doc)
+    layer[:dct_references_s] = doc2dct_references(fgdc_file, doc)
     layer[:georss_box_s] = doc2georss_box(doc)
     layer[:layer_id_s] = doc2layer_id(doc)
     layer[:layer_geom_type_s] = doc2layer_geom_type(doc)
@@ -103,8 +103,7 @@ module Fgdc2Geobl
   # Documented here:
   #   https://github.com/geoblacklight/geoblacklight-schema
   #       /blob/master/docs/dct_references_schema.markdown
-  # def doc2dct_references(fgdc_file, doc)
-  def doc2dct_references(doc)
+  def doc2dct_references(fgdc_file, doc)
 
     # basename = File.basename(fgdc_file, '.xml')
 
@@ -136,14 +135,16 @@ module Fgdc2Geobl
     end
     # Full layer description
     # Metadata in HTML
+    die "No APP_CONFIG['display_urls']['html']" unless APP_CONFIG['display_urls']['html']
     dct_references['http://www.w3.org/1999/xhtml'] =
         APP_CONFIG['display_urls']['html'] + "/#{@resdesc}.html"
     # # Metadata in ISO 19139
     # dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
     #     APP_CONFIG['display_urls']['iso19139'] + "/#{@resdesc}.xml"
     # Metadata in FGDC
+    die "No APP_CONFIG['display_urls']['fgdc']" unless APP_CONFIG['display_urls']['fgdc']
     dct_references['http://www.opengis.net/cat/csw/csdgm'] =
-        APP_CONFIG['display_urls']['fgdc'] + "/#{@resdesc}.xml"
+        APP_CONFIG['display_urls']['fgdc'] + "/" + File.basename(fgdc_file)
     # Metadata in MODS
     # ArcGIS FeatureLayer
     # ArcGIS TiledMapLayer

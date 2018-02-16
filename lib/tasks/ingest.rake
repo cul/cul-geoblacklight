@@ -262,7 +262,8 @@ namespace :metadata do
         # Parse doc to set @resdesc, etc.
         set_variables(nokogiri_doc)
 
-        geobl_json = fgdc2geobl(nokogiri_doc)
+        # Need the original funky XML filename, as well as the nokogiri doc
+        geobl_json = fgdc2geobl(fgdc_file, nokogiri_doc)
 
         doc_dir = "#{geobl_current}#{@resdesc}"
         FileUtils.mkdir_p(doc_dir)
