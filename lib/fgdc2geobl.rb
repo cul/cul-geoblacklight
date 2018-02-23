@@ -169,20 +169,21 @@ module Fgdc2Geobl
   # Suggested vocabulary:
   #     "Point", "Line", "Polygon", "Raster", "Scanned Map", "Mixed"
   def doc2layer_geom_type(doc)
-    sdtstype = doc.xpath("//metadata/spdoinfo/ptvctinf/sdtsterm/sdtstype").text
-    return "Polygon" if sdtstype.match /G-polygon/i
-    return "Point" if sdtstype.match /Point/i
-    return "Line" if sdtstype.match /String/i
+    sdtstype = doc.xpath('//metadata/spdoinfo/ptvctinf/sdtsterm/sdtstype').text
+    return 'Polygon' if sdtstype.match /G-polygon/i
+    return 'Point' if sdtstype.match /Point/i
+    return 'Line' if sdtstype.match /String/i
 
-    direct = doc.xpath("//metadata/spdoinfo/direct").text
-    return "Raster" if direct.match /Raster/i
-    return "Point" if direct.match /Point/i
+    direct = doc.xpath('//metadata/spdoinfo/direct').text
+    return 'Raster' if direct.match /Raster/i
+    return 'Point' if direct.match /Point/i
+    return 'Polygon' if direct.match /Vector/i
 
-    indspref = doc.xpath("//metadata/spdoinfo/indspref").text
-    return "Table" if indspref.match /Table/i
+    indspref = doc.xpath('//metadata/spdoinfo/indspref').text
+    return 'Table' if indspref.match /Table/i
 
     # undetermined
-    return "UNDETERMINED"
+    return 'UNDETERMINED'
   end
 
   # 20100603 --> 2010-06-03T00:00:00Z
