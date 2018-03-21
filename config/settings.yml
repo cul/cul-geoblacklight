@@ -1,14 +1,17 @@
 # Configurable Logo Used for CartoDB export
 APPLICATION_LOGO_URL: 'http://geoblacklight.org/images/geoblacklight-logo.png'
 
-# CartoDB OneClick Service https://cartodb.com/open-in-cartodb/
-CARTODB_ONECLICK_LINK: 'http://oneclick.cartodb.com/'
+# Carto OneClick Service https://carto.com/engine/open-in-carto/
+CARTO_ONECLICK_LINK: 'http://oneclick.cartodb.com/'
 
 # Download path can be configured using this setting
 #DOWNLOAD_PATH: "./tmp/cache/downloads"
 
-#DEPRECATED Main Solr geometry field used for spatial search and bounding box. Should be type 'rpt'
+# DEPRECATED Main Solr geometry field used for spatial search and bounding box. Should be type 'rpt'
 GEOMETRY_FIELD: 'solr_geom'
+
+# The bq boost value for spatial search matches within a bounding box
+BBOX_WITHIN_BOOST: '10'
 
 # Solr field mappings (no defaults - all must be specified)
 FIELDS:
@@ -29,18 +32,15 @@ FIELDS:
   :TEMPORAL: 'dct_temporal_sm'
   :TITLE: 'dc_title_s'
 
-
-
 # Institution deployed at
 # INSTITUTION: 'Stanford'
 INSTITUTION: 'Columbia'
 
 # Metadata shown in tool panel
 METADATA_SHOWN:
-  - 'html'
+  - 'mods'
   - 'fgdc'
   - 'iso19139'
-  - 'mods'
 
 # (For external Download) timeout and open_timeout parameters for Faraday
 TIMEOUT_DOWNLOAD: 16
@@ -62,8 +62,8 @@ WMS_PARAMS:
   :SRS: 'EPSG:4326'
   :EXCEPTIONS: 'application/json'
   :INFO_FORMAT: 'text/html'
-  
-# Settings for leaflet 
+
+# Settings for leaflet
 OPACITY_CONTROL: &opacity_control
   CONTROLS:
     - 'Opacity'

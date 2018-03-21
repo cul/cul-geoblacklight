@@ -1,8 +1,14 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
+
+# https://github.com/bundler/bundler/blob/3e3f64f1166c4613329495459793dbd5a714efd3/lib/bundler/dsl.rb#L254-L266
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.2'
+gem 'rails', '~> 5.0'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
@@ -56,22 +62,22 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 
-  # Capistrano deployment
   gem 'capistrano', require: false
-  # Rails and Bundler integrations were moved out from Capistrano 3
   gem 'capistrano-rails', require: false
   gem 'capistrano-bundler', require: false
-  # "idiomatic support for your preferred ruby version manager"
   gem 'capistrano-rvm', require: false
-  # The `deploy:restart` hook for passenger applications is now in a separate gem
-  # Just add it to your Gemfile and require it in your Capfile.
   gem 'capistrano-passenger', require: false
 
+  # Rails 5 requirement
+  gem 'listen'
 end
 
-
 gem 'blacklight'
-gem 'geoblacklight', '~> 1.5.0'
+
+# DEBUG locally
+# gem 'geoblacklight', path: "/Users/marquis/src/geoblacklight"
+gem 'geoblacklight'
+
 gem 'blacklight_range_limit'
 
 # ssh used during rake tasks
@@ -84,8 +90,12 @@ gem 'rsolr'
 
 
 # Authentication
-gem 'devise', '~> 3.0'
-gem 'cul_omniauth'
+# gem 'devise', '~> 3.0'
+gem 'devise', '~> 4.3.0'
+
+# gem 'cul_omniauth'
+gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
+
 # necessary to quiet a cul_omniauth exception
 gem 'rspec'
 
