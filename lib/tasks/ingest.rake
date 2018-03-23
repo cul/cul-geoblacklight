@@ -321,10 +321,12 @@ namespace :metadata do
     puts "solr=#{solr}"
 
     if ENV['STALE_DAYS'] && ENV['STALE_DAYS'].to_i < 2
-      puts "ERROR: Environment variable STALE_DAYS set to [#{STALE_DAYS}]"
+      puts "ERROR: Environment variable STALE_DAYS set to [#{ENV['STALE_DAYS']}]"
       puts "ERROR: Should be > 1, or unset to allow default setting."
       puts "ERROR: Skipping prune_index step."
+      next
     end
+
     stale = (ENV['STALE_DAYS'] || 21).to_i
     query = "timestamp:[* TO NOW/DAY-#{stale}DAYS] AND dct_provenance_s:Columbia"
 
