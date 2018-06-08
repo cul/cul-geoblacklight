@@ -67,9 +67,6 @@ group :development do
   gem 'capistrano-bundler', require: false
   gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
-
-  # Rails 5 requirement
-  gem 'listen'
 end
 
 gem 'blacklight'
@@ -110,3 +107,6 @@ gem 'net-ldap'
 
 # Crontab management
 gem 'whenever'
+
+# Rails 5 requirement
+gem 'listen'
