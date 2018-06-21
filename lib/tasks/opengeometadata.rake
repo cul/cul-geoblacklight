@@ -7,12 +7,15 @@ namespace :opengeometadata do
   ogm_path = ENV['OGM_PATH'] || 'tmp/opengeometadata'
   solr_url = ENV['SOLR_URL']
 
-  repos = [
+  core_repos = [
     'edu.stanford.purl',
     'edu.nyu',
     'edu.virginia',
+    'big-ten',
   ]
 
+  repos = APP_CONFIG['opengeometadata_repos'] || core_repos
+  
   desc "Download OpenGeoMetadata for all configured institutions"
   task :fetch_all=> :environment do
     puts_datestamp "---- metadata:fetch_all ----"
@@ -69,25 +72,34 @@ namespace :opengeometadata do
     solr = RSolr.connect :url => Blacklight.connection_config[:url]
     puts "solr=#{solr}"
 
-    puts "[#{ogm_path}/#{repo}]"
+    puts "local repo path:  #{ogm_path}/#{repo}"
 
+    found = 0
+    restricted = 0
+    ingested = 0
     Find.find("#{ogm_path}/#{repo}") do |path|
       next unless File.basename(path) == 'geoblacklight.json'
+      found = found + 1
       doc = JSON.parse(File.read(path))
       [doc].flatten.each do |record|
         begin
           # GEO-26 - Suppress restricted layers
-          next if record['dc_rights_s'] == 'Restricted'
+          if record['dc_rights_s'] == 'Restricted'
+            restricted = restricted + 1
+            next
+          end
 
           puts "Indexing #{record['layer_slug_s']}: #{path}" if $DEBUG
           solr.update params: { commitWithin: commit_within, overwrite: true },
                       data: [record].to_json,
                       headers: { 'Content-Type' => 'application/json' }
+          ingested = ingested + 1
         rescue RSolr::Error::Http => error
           puts error
         end
       end
     end
+    puts "Found #{found} layers total, #{restricted} restricted, ingested #{ingested}."
     solr.commit
   end
 
