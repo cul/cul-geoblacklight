@@ -3,6 +3,9 @@
 
 require File.expand_path('../config/application', __FILE__)
 
+# Access to APP_CONFIG hash of per-environment settings
+require File.join(Rails.root.to_s, 'config', 'initializers/aaa_load_app_config.rb')
+
 Rails.application.load_tasks
 
 # Make the GeoCombine rake tasks available to our app
