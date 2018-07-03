@@ -88,6 +88,12 @@ namespace :opengeometadata do
             restricted = restricted + 1
             next
           end
+          
+          # Skip out-of-bounds ENVELOPE() data
+          if not valid_geometry?(record['solr_geom'])
+            puts "ERROR: layer id #{record['layer_id_s']} solr_geom data NOT valid:  #{record['solr_geom']}"
+            next
+          end
 
           puts "Indexing #{record['layer_slug_s']}: #{path}" if $DEBUG
           solr.update params: { commitWithin: commit_within, overwrite: true },
@@ -185,6 +191,27 @@ def getRepoProvenances(repo)
   else
     raise "ERROR:  Unknown provenance for repo #{repo}"
   end
+end
+
+# Is the passed geometry valid?
+def valid_geometry?(solr_geom)
+  return false unless solr_geom.present?
+
+  # :solr_geom  => "ENVELOPE(#{w}, #{e}, #{n}, #{s})",
+  # Solr docs say:   "minX, maxX, maxY, minY order"
+  # maximum boundary: (minX=-180.0,maxX=180.0,minY=-90.0,maxY=90.0)
+  match = solr_geom.match(/ENVELOPE\(([\d\.\-]+), ([\d\.\-]+), ([\d\.\-]+), ([\d\.\-]+)\)/)
+
+  # Not parsable ENVELOPE() syntax?
+  return false unless match.present?
+
+  minX, maxX, maxY, minY = match.captures
+  return false if minX.to_i < -180 ||
+                  maxX.to_i >  180 ||
+                  maxY.to_i >   90 ||
+                  minY.to_i <  -90
+
+  return true
 end
 
 
