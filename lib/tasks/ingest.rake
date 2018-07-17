@@ -115,7 +115,7 @@ namespace :metadata do
 
       rescue => ex
         puts "ERROR: #{fgdc_file}: " + ex.message
-        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
 
@@ -225,7 +225,7 @@ namespace :metadata do
         htmlized = htmlized + 1
       rescue => ex
         puts "ERROR: #{fgdc_file}: " + ex.message
-        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
 
@@ -272,7 +272,7 @@ namespace :metadata do
         transformed = transformed + 1
       rescue => ex
         puts "ERROR: #{fgdc_file}: " + ex.message
-        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
     puts "Transformed #{transformed} files."
@@ -302,7 +302,7 @@ namespace :metadata do
         ingested = ingested + 1
       rescue => ex
         puts "ERROR: ingesting #{geobl_file}: " + ex.message
-        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
       end
     }
     puts "Ingested #{ingested} files."
