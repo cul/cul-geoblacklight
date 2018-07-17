@@ -45,6 +45,54 @@ namespace :opengeometadata do
     end
   end
   
+
+
+  # Some OpenGeoMetadata repos provide FGDC, not GeoBlacklight JSON
+  desc "Transform OpenGeoMetadata FGDC XML to GeoBlacklight Schema JSON"
+  task :transform, [:repo] => :environment do |t, args|
+    unless repo = args[:repo]
+      puts "Must pass input arg :repo (e.g.: rake opengeometadata:transform[edu.tufts])" 
+      next
+    end
+
+    unless Dir.exist?("#{ogm_path}/#{repo}")
+      puts "ERROR: Cannot not find directory #{ogm_path}/#{repo}" 
+      next
+    end
+
+    puts "Begining transform..."
+    transformed = 0
+    Find.find("#{ogm_path}/#{repo}") do |fgdc_file|
+      next unless File.basename(fgdc_file) == 'fgdc.xml'
+
+      begin
+        # The GeoBlacklight schema file will be the same basename, but json
+        fgdc_xml = File.read(fgdc_file)
+        nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
+          config.strict.nonet
+        end
+        # Parse doc to set @key, etc.
+        set_variables(repo, nokogiri_doc)
+
+        # Need the original funky XML filename, as well as the nokogiri doc
+        geobl_json = fgdc2geobl(fgdc_file, nokogiri_doc)
+
+        doc_dir = File.dirname(fgdc_file)
+        geobl_file = "#{doc_dir}/geoblacklight.json"
+        File.write(geobl_file, geobl_json + "\n")
+        transformed = transformed + 1
+      rescue => ex
+        puts "ERROR: #{fgdc_file}: " + ex.message
+        # puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+      end
+    end
+    puts "Transformed #{transformed} files."
+  end
+
+
+
+
+  
   desc "Ingest OpenGeoMetadata for all configured institutions"
   task :ingest_all=> :environment do
     puts_datestamp "---- metadata:ingest_all ----"
@@ -177,17 +225,33 @@ end
 
 
 # A given repo (e.g., NYU) may contain metadata records from
-# multiple provenances (e.g., [ "NYU", "Baruch CUNY"]),
-# 
+# multiple provenances (e.g., [ "NYU", "Baruch CUNY"]).
+# We'll hard-code this mapping for now, but we should really
+# extract possible provenance values from the supplied data.
 # 
 def getRepoProvenances(repo)
   case repo
-  when 'edu.stanford.purl'
-    return 'Stanford'
-  when 'edu.virginia'
-    return 'UVa'
+  when 'big-ten'
+    # The "Big Ten" is an alliance of 14 [sic] institutions.
+    # Only 9 of them contribute records to OpenGeoMetadata currently.
+    [ 'Illinois', 'Indiana', 'Iowa', 'Maryland', 'Michigan',
+      'Michigan State', 'Minnesota', 'Purdue', 'Wisconsin' ]
+  when 'edu.berkeley'
+    return 'Berkeley'
+  when 'edu.cornell'
+    return 'Cornell'
+  when 'edu.harvard'
+    return 'Harvard'
   when 'edu.nyu'
     return [ 'NYU', 'Baruch CUNY' ]
+  when 'edu.princeton.arks'
+    return 'Princeton'
+  when 'edu.stanford.purl'
+    return 'Stanford'
+  when 'edu.tufts'
+    return 'Tufts'
+  when 'edu.virginia'
+    return 'UVa'
   else
     raise "ERROR:  Unknown provenance for repo #{repo}"
   end
@@ -206,10 +270,10 @@ def valid_geometry?(solr_geom)
   return false unless match.present?
 
   minX, maxX, maxY, minY = match.captures
-  return false if minX.to_i < -180 ||
-                  maxX.to_i >  180 ||
-                  maxY.to_i >   90 ||
-                  minY.to_i <  -90
+  return false if minX.to_f < -180 ||
+                  maxX.to_f >  180 ||
+                  maxY.to_f >   90 ||
+                  minY.to_f <  -90
 
   return true
 end

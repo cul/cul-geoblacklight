@@ -20,48 +20,59 @@ module Fgdc2Geobl
     # is based on this value
     @dc_rights = doc2dc_rights(doc)
 
-    # Add each element in turn...
-    layer[:uuid] = doc2uuid(doc)
-    layer[:dc_identifier_s] = doc2dc_identifier(doc)
-    layer[:dc_title_s] = doc2dc_title(doc)
+    # Add each element in turn, alpha order
+
+    layer[:dc_creator_sm] = doc2dc_creator(doc)
     layer[:dc_description_s] = doc2dc_description(doc)
-    # layer[:dc_rights_s] = doc2dc_rights(doc)
+    layer[:dc_format_s] = doc2dc_format(doc)
+    layer[:dc_identifier_s] = doc2dc_identifier(doc)
+    layer[:dc_language_s] = doc2dc_language(doc)
+    layer[:dc_publisher_s] = doc2dc_publisher(doc)
     layer[:dc_rights_s] = @dc_rights
+    layer[:dc_subject_sm] = doc2dc_subject(doc)
+    layer[:dc_title_s] = doc2dc_title(doc)
+    layer[:dc_type_s] = doc2dc_type(doc)
+
+    layer[:dct_isPartOf_sm] = doc2dct_isPartOf(doc)
+    layer[:dct_issued_s] = doc2dct_issued(doc)
     layer[:dct_provenance_s] = doc2dct_provenance(doc)
     layer[:dct_references_s] = doc2dct_references(fgdc_file, doc)
-    layer[:georss_box_s] = doc2georss_box(doc)
-    layer[:layer_id_s] = doc2layer_id(doc)
+    layer[:dct_source_sm] = []
+    layer[:dct_spatial_sm] = doc2dct_spatial(doc)
+    layer[:dct_temporal_sm] = doc2dct_temporal(doc)
+
+    layer[:geoblacklight_version] = "1.0"
+
     layer[:layer_geom_type_s] = doc2layer_geom_type(doc)
+    layer[:layer_id_s] = doc2layer_id(doc)
     layer[:layer_modified_dt] = doc2layer_modified(doc)
     layer[:layer_slug_s] = doc2layer_slug(doc)
     layer[:solr_geom] = doc2solr_geom(doc)
     layer[:solr_year_i] = doc2solr_year(doc)
-    layer[:dc_creator_sm] = doc2dc_creator(doc)
-    layer[:dc_format_s] = doc2dc_format(doc)
-    layer[:dc_language_s] = doc2dc_language(doc)
-    layer[:dc_publisher_s] = doc2dc_publisher(doc)
-    layer[:dc_subject_sm] = doc2dc_subject(doc)
-    layer[:dc_type_s] = doc2dc_type(doc)
-    layer[:dct_spatial_sm] = doc2dct_spatial(doc)
-    layer[:dct_temporal_sm] = doc2dct_temporal(doc)
-    layer[:dct_issued_s] = doc2dct_issued(doc)
-    layer[:dct_isPartOf_sm] = doc2dct_isPartOf(doc)
-    # omit?
+
+
+
     # layer[:georss_point_s] = doc2georss_point(doc)
-    layer[:georss_polygon_s] = doc2georss_polygon(doc)
+    # layer[:georss_box_s] = doc2georss_box(doc)
+    # layer[:georss_polygon_s] = doc2georss_polygon(doc)
 
     return JSON.pretty_generate(layer)
 
   end
 
 
-  def doc2uuid(doc)
-    return "urn:columbia.edu:Columbia.#{@resdesc}"
-  end
+  # def doc2uuid(doc)
+  #   return "urn:columbia.edu:Columbia.#{@key}"
+  # end
 
   def doc2dc_identifier(doc)
-    # We're using the same value for uuid and dc_identifier
-    return doc2uuid(doc)
+    identifier = "#{@provenance}.#{@key}"
+    # We'd begun with a more complex identifier locally.
+    identifier = "urn:columbia.edu:#{identifier}" if @provenance == 'Columbia'
+    return identifier
+
+    # # We're using the same value for uuid and dc_identifier
+    # return doc2uuid(doc)
   end
 
   def doc2dc_title(doc)
@@ -97,7 +108,8 @@ module Fgdc2Geobl
   end
 
   def doc2dct_provenance(doc)
-    return "Columbia"
+    # return "Columbia"
+    return @provenance
   end
 
   # Documented here:
@@ -119,10 +131,12 @@ module Fgdc2Geobl
       unless layer_geom_type == 'Raster'
         # Web Mapping Service (WMS) 
         dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
-            APP_CONFIG['geoserver_url'] + '/wms/sde'
+            # APP_CONFIG['geoserver_url'] + '/wms/sde'
+            @geoserver_wms_url
         # Web Feature Service (WFS)
         dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
-            APP_CONFIG['geoserver_url'] + '/sde/ows'
+            # APP_CONFIG['geoserver_url'] + '/sde/ows'
+            @geoserver_wfs_url
       end
     end
 
@@ -137,10 +151,10 @@ module Fgdc2Geobl
     # Metadata in HTML
     die "No APP_CONFIG['display_urls']['html']" unless APP_CONFIG['display_urls']['html']
     dct_references['http://www.w3.org/1999/xhtml'] =
-        APP_CONFIG['display_urls']['html'] + "/#{@resdesc}.html"
+        APP_CONFIG['display_urls']['html'] + "/#{@key}.html"
     # # Metadata in ISO 19139
     # dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
-    #     APP_CONFIG['display_urls']['iso19139'] + "/#{@resdesc}.xml"
+    #     APP_CONFIG['display_urls']['iso19139'] + "/#{@key}.xml"
     # Metadata in FGDC
     die "No APP_CONFIG['display_urls']['fgdc']" unless APP_CONFIG['display_urls']['fgdc']
     dct_references['http://www.opengis.net/cat/csw/csdgm'] =
@@ -154,13 +168,29 @@ module Fgdc2Geobl
     return dct_references.compact.to_json.to_s
   end
 
-  def doc2georss_box(doc)
-    return "#{@southbc} #{@westbc} #{@northbc} #{@eastbc}"
-  end
+  # def doc2georss_box(doc)
+  #   return "#{@southbc} #{@westbc} #{@northbc} #{@eastbc}"
+  # end
 
+  # The layer_id needs to be the identifier of this layer in the
+  # institution's GeoServer installation.
+  # The mapping of @key to layer_id cannot be generalized,
+  # so cases are hardcoded below.
   def doc2layer_id(doc)
-    # return "Columbia:Columbia.#{@resdesc}"
-    return "sde:columbia.#{@resdesc}".html_safe
+    case @provenance
+    when 'Columbia'
+      "sde:columbia.#{@key}".html_safe
+    when 'Harvard'
+      @key.html_safe
+    when 'Tufts'
+      "sde:GISPORTAL.GISOWNER01.#{@key.upcase}"
+    else
+      raise "ERROR:  doc2layer_id() got unknown provenance @provenance"
+    end
+    
+    # return "Columbia:Columbia.#{@key}"
+    # return "sde:columbia.#{@key}".html_safe
+    # return "sde:#{@provenance.downcase}.#{@key}".html_safe
   end
 
   # Possibly also consider:
@@ -229,14 +259,14 @@ module Fgdc2Geobl
     # end
 
     # Couldn't find any date?
-    return "UNDETERMINED"
+    return nil
   end
 
   def doc2dc_creator(doc)
-    # doc.xpath("//idinfo/citation/citeinfo/origin").map(&:text.strip)
+    # If not found, return empty array
     doc.xpath("//idinfo/citation/citeinfo/origin").map { |node|
       node.text.strip
-    }
+    } || []
   end
 
   # Suggested vocabulary: Shapefile, GeoTIFF, ArcGRID
@@ -268,8 +298,8 @@ module Fgdc2Geobl
     langdata = doc.xpath("//idinfo/descript/langdata").text
     return "English" if langdata.match /en/i
 
-    # undetermined
-    return ""
+    # undetermined - default to English
+    return "English"
   end
 
   def doc2dc_publisher(doc)
@@ -281,14 +311,19 @@ module Fgdc2Geobl
   end
 
   def doc2dc_subject(doc)
-    # doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
-    #   node.text.strip
-    # }
-    if iso_theme = doc.at('theme:has(themekt[text()="ISO 19115 Topic Categories"])')
-      iso_theme.xpath(".//themekey").map { |node|
-        node.text.strip
-      }
-    end
+    # ALL subjects?
+    doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
+      node.text.strip
+    }
+
+    # filter by vocabulary?
+    # subjects = []
+    # if iso_theme = doc.at('theme:has(themekt[text()="ISO 19115 Topic Categories"])')
+    #   subjects << iso_theme.xpath(".//themekey").map { |node|
+    #     node.text.strip.capitalize
+    #   }
+    # end
+    # subjects
   end
 
   def doc2dc_type(doc)
@@ -371,19 +406,30 @@ module Fgdc2Geobl
   #   return "UNDETERMINED"
   # end
 
-  # Any set of x,y points which define the bounding polygon
-  def doc2georss_polygon(doc)
-    return [@northbc, @westbc,
-            @northbc, @eastbc,
-            @southbc, @eastbc,
-            @southbc, @westbc,
-            @northbc, @westbc].join(' ')
-  end
+  # # Any set of x,y points which define the bounding polygon
+  # def doc2georss_polygon(doc)
+  #   return [@northbc, @westbc,
+  #           @northbc, @eastbc,
+  #           @southbc, @eastbc,
+  #           @southbc, @westbc,
+  #           @northbc, @westbc].join(' ')
+  # end
 
   #####################
-  def set_variables(doc)
+  def set_variables(repo, doc)
+    # fetch repo-specific configuration variables
+    repo_config = APP_CONFIG['fgdc_mapping_constants'][repo]
+    die "Missing config details for repo #{repo}" unless repo_config.present?
+    @provenance         =  repo_config['provenance']
+    @geoserver_wms_url  =  repo_config['geoserver_wms_url']
+    @geoserver_wfs_url  =  repo_config['geoserver_wfs_url']
+    @key_xpath          =  repo_config['key_xpath']
+  
+    
     # the unique key for this metadata record
-    @resdesc = doc.xpath("//resdesc").text.strip
+    key = doc.xpath(@key_xpath)
+    key = key.text if key.class == Nokogiri::XML::NodeSet
+    @key = key.to_s.strip
 
     # bounding coordinates
     @northbc = doc.xpath("//idinfo/spdom/bounding/northbc").text.to_f

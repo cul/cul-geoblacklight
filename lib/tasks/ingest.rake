@@ -89,8 +89,8 @@ namespace :metadata do
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
-        # Parse doc to set @resdesc, etc.
-        set_variables(nokogiri_doc)
+        # Parse doc to set @key, etc.
+        set_variables('edu.columbia', nokogiri_doc)
 
         download_link = nokogiri_doc.at_xpath("//idinfo/citation/citeinfo/onlink")
         next unless download_link.present?
@@ -149,18 +149,18 @@ namespace :metadata do
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
-        # Parse doc to set @resdesc, etc.
-        set_variables(nokogiri_doc)
-        if @resdesc.match /[^\w\-]/
-          puts "ERROR: resdesc '#{@resdesc}' contains invalid character(s)  (#{fgdc_basename})"
+        # Parse doc to set @key, etc.
+        set_variables('edu.columbia', nokogiri_doc)
+        if @key.match /[^\w\-]/
+          puts "ERROR: resdesc '#{@key}' contains invalid character(s)  (#{fgdc_basename})"
           next
         end
 
-        if resdesc_map[@resdesc].present?
-          puts "ERROR: resdesc '#{@resdesc}' used in both #{fgdc_basename} and #{resdesc_map[@resdesc]}"
+        if resdesc_map[@key].present?
+          puts "ERROR: resdesc '#{@key}' used in both #{fgdc_basename} and #{resdesc_map[@key]}"
           next
         else
-          resdesc_map[@resdesc] = fgdc_basename
+          resdesc_map[@key] = fgdc_basename
         end
 
         # We only expect public layers to be found in GeoServer
@@ -172,14 +172,14 @@ namespace :metadata do
         puts "geom_type: #{geom_type}" if ENV['DEBUG']
         next if geom_type == 'Raster'
 
-        unless @resdesc.present?
+        unless @key.present?
           puts "ERROR: public layer #{fgdc_basename} missing resdesc"
           next
         end
-        layer_name = "sde:columbia." + @resdesc
+        layer_name = "sde:columbia." + @key
 
         unless all_layer_names.include?(layer_name)
-          puts "ERROR: resdesc '#{@resdesc}' (#{layer_name}) not found in GeoServer (#{fgdc_basename})"
+          puts "ERROR: resdesc '#{@key}' (#{layer_name}) not found in GeoServer (#{fgdc_basename})"
         end
 
       rescue => ex
@@ -214,13 +214,13 @@ namespace :metadata do
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
-        # Parse doc to set @resdesc, etc.
-        set_variables(nokogiri_doc)
+        # Parse doc to set @key, etc.
+        set_variables('edu.columbia', nokogiri_doc)
 
         fgdc_html = fgdc2html(nokogiri_doc)
 
         # The HTML file will be name for the FGDC <resdesc> 
-        html_file = "#{fgdc_html_dir}#{@resdesc}.html"
+        html_file = "#{fgdc_html_dir}#{@key}.html"
         File.write(html_file, fgdc_html + "\n")
         htmlized = htmlized + 1
       rescue => ex
@@ -259,13 +259,13 @@ namespace :metadata do
         nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
           config.strict.nonet
         end
-        # Parse doc to set @resdesc, etc.
-        set_variables(nokogiri_doc)
+        # Parse doc to set @key, etc.
+        set_variables('edu.columbia', nokogiri_doc)
 
         # Need the original funky XML filename, as well as the nokogiri doc
         geobl_json = fgdc2geobl(fgdc_file, nokogiri_doc)
 
-        doc_dir = "#{geobl_current}#{@resdesc}"
+        doc_dir = "#{geobl_current}#{@key}"
         FileUtils.mkdir_p(doc_dir)
         geobl_file = "#{doc_dir}/#{json_filename}"
         File.write(geobl_file, geobl_json + "\n")
