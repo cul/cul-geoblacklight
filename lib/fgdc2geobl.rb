@@ -418,6 +418,8 @@ module Fgdc2Geobl
   #####################
   def set_variables(repo, doc)
     # fetch repo-specific configuration variables
+    fgdc_mapping_constants = APP_CONFIG['fgdc_mapping_constants']
+    die "Missing fgdc_mapping_constants" unless fgdc_mapping_constants.present?
     repo_config = APP_CONFIG['fgdc_mapping_constants'][repo]
     die "Missing config details for repo #{repo}" unless repo_config.present?
     @provenance         =  repo_config['provenance']
