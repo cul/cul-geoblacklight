@@ -11,9 +11,10 @@ end
 gem 'rails', '~> 5.0'
 
 # # Use SCSS for stylesheets
-# gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 5.0'
 # sass-rails is deprecated, move to sassc-rails
-gem 'sassc-rails'
+# But... doesn't build with our servers' gcc 4.4.7
+# gem 'sassc-rails'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
