@@ -195,7 +195,15 @@ namespace :opengeometadata do
     puts "Committing..."
     solr.commit
     puts "Optimizing..."
-    solr.optimize
+    begin
+      solr.optimize
+    rescue Net::ReadTimeout
+      # Not a problem really - we kicked off an optimization,
+      # it'll take a while to complete.
+      puts "-- lost server connectivity during optimization"
+    rescue => ex
+      puts "Error during optimization: " + ex.message + "(#{ex.class})"
+    end
     puts "Done."
   end
 
@@ -266,7 +274,7 @@ def valid_geometry?(solr_geom)
   # :solr_geom  => "ENVELOPE(#{w}, #{e}, #{n}, #{s})",
   # Solr docs say:   "minX, maxX, maxY, minY order"
   # maximum boundary: (minX=-180.0,maxX=180.0,minY=-90.0,maxY=90.0)
-  match = solr_geom.match(/ENVELOPE\(([\d\.\-]+), ([\d\.\-]+), ([\d\.\-]+), ([\d\.\-]+)\)/)
+  match = solr_geom.match(/ENVELOPE\(([\d\.\-]+)[\ \,]*([\d\.\-]+)[\ \,]*([\d\.\-]+)[\ \,]*([\d\.\-]+)\)/)
 
   # Not parsable ENVELOPE() syntax?
   return false unless match.present?

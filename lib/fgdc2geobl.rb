@@ -115,6 +115,8 @@ module Fgdc2Geobl
   # Documented here:
   #   https://github.com/geoblacklight/geoblacklight-schema
   #       /blob/master/docs/dct_references_schema.markdown
+  # docs moved to:
+  # https://github.com/geoblacklight/geoblacklight/wiki/Schema
   def doc2dct_references(fgdc_file, doc)
 
     # basename = File.basename(fgdc_file, '.xml')
