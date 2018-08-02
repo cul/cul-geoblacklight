@@ -128,7 +128,12 @@ namespace :opengeometadata do
     Find.find("#{ogm_path}/#{repo}") do |path|
       next unless File.basename(path) == 'geoblacklight.json'
       found = found + 1
-      doc = JSON.parse(File.read(path))
+      begin
+        doc = JSON.parse(File.read(path))
+      rescue JSON::ParserError
+        puts "ERROR: JSON::ParserError reading #{path}"
+        next
+      end
       [doc].flatten.each do |record|
         begin
           # GEO-26 - Suppress restricted layers
