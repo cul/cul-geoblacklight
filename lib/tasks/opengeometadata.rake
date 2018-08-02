@@ -242,6 +242,8 @@ def getRepoProvenances(repo)
     return 'Cornell'
   when 'edu.harvard'
     return 'Harvard'
+  when 'edu.mit'
+    return 'MIT'
   when 'edu.nyu'
     return [ 'NYU', 'Baruch CUNY' ]
   when 'edu.princeton.arks'
