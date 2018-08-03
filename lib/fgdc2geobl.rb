@@ -312,20 +312,21 @@ module Fgdc2Geobl
     }
   end
 
+  # See GEO-13 - Cleanup Subject facets
   def doc2dc_subject(doc)
-    # ALL subjects?
-    doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
-      node.text.strip
-    }
+    # # ALL subjects?
+    # doc.xpath("//idinfo/keywords/theme/themekey").map { |node|
+    #   node.text.strip
+    # }
 
-    # filter by vocabulary?
-    # subjects = []
-    # if iso_theme = doc.at('theme:has(themekt[text()="ISO 19115 Topic Categories"])')
-    #   subjects << iso_theme.xpath(".//themekey").map { |node|
-    #     node.text.strip.capitalize
-    #   }
-    # end
-    # subjects
+    # filter by vocabulary - anything labeled ISO 19115
+    subjects = []
+    if iso_theme = doc.at_css('theme:has(themekt[text() *= "ISO 19115"])')
+      subjects << iso_theme.xpath(".//themekey").map { |node|
+        node.text.strip.capitalize
+      }
+    end
+    subjects.sort
   end
 
   def doc2dc_type(doc)
