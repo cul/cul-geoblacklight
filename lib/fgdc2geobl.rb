@@ -322,11 +322,11 @@ module Fgdc2Geobl
     # filter by vocabulary - anything labeled ISO 19115
     subjects = []
     if iso_theme = doc.at_css('theme:has(themekt[text() *= "ISO 19115"])')
-      subjects << iso_theme.xpath(".//themekey").map { |node|
-        node.text.strip.capitalize
+      iso_theme.xpath(".//themekey").each { |node|
+        subjects << node.text.capitalize
       }
     end
-    subjects.sort
+    subjects.flatten.sort
   end
 
   def doc2dc_type(doc)
