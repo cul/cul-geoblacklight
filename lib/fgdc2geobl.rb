@@ -323,7 +323,7 @@ module Fgdc2Geobl
     subjects = []
     if iso_theme = doc.at_css('theme:has(themekt[text() *= "ISO 19115"])')
       iso_theme.xpath(".//themekey").each { |node|
-        subjects << node.text.capitalize
+        subjects << node.text.sub(/^./, &:upcase)
       }
     end
     subjects.flatten.sort
