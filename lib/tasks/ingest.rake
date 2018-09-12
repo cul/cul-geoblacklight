@@ -9,6 +9,7 @@ include Fgdc2Html
 
 # Keep one older iteration - very useful for debugging
 tmpdir = '/tmp'
+metadata_server = APP_CONFIG['metadata_server']
 fgdc_current = File.join(Rails.root, "public/metadata/fgdc/current/")
 fgdc_old = File.join(Rails.root, "public/metadata/fgdc/old/")
 fgdc_html_dir = File.join(Rails.root, "public/metadata/fgdc/html/")
@@ -262,8 +263,9 @@ namespace :metadata do
         # Parse doc to set @key, etc.
         set_variables('edu.columbia', nokogiri_doc)
 
-        # Need the original funky XML filename, as well as the nokogiri doc
-        geobl_json = fgdc2geobl(fgdc_file, nokogiri_doc)
+        # Need public URL to the FGDC XML file, as well as the nokogiri doc
+        fgdc_url = metadata_server + fgdc_file.gsub(/.*metadata/, '/metadata')
+        geobl_json = fgdc2geobl(fgdc_url, nokogiri_doc)
 
         doc_dir = "#{geobl_current}#{@key}"
         FileUtils.mkdir_p(doc_dir)
@@ -355,8 +357,9 @@ namespace :metadata do
     puts_datestamp "---- metadata:validate_layers ----"
     Rake::Task['metadata:validate_layers'].execute
 
-    puts_datestamp "---- metadata:htmlize ----"
-    Rake::Task['metadata:htmlize'].execute
+    # Nope.  We don't need an HTML version of the FGDC XML.
+    # puts_datestamp "---- metadata:htmlize ----"
+    # Rake::Task['metadata:htmlize'].execute
 
     puts_datestamp "---- metadata:transform ----"
     Rake::Task['metadata:transform'].execute

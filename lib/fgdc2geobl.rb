@@ -1,19 +1,9 @@
 module Fgdc2Geobl
 
-  # Use the file-name to create reference to html version of FGDC
-  # def fgdc2geobl(fgdc_file, fgdc_xml)
   # input args:
-  #   fgdc_file - original arbitrary XML filename, does NOT equal resdesc
+  #   fgdc_url - publicly accessible URL to FGDC XML
   #   doc  -  nokogiri::XML::Document representing the FGDC XML
-  def fgdc2geobl(fgdc_file, doc)
-    # doc  = Nokogiri::XML(fgdc_xml) do |config|
-    #   config.strict.nonet
-    # end
-    # 
-    # # Set some instance variables,
-    # # used in multiple fields below
-    # set_variables(doc)
-
+  def fgdc2geobl(fgdc_url, doc)
     layer = {}
 
     # Figure this out first, some of the other metadata
@@ -36,7 +26,7 @@ module Fgdc2Geobl
     layer[:dct_isPartOf_sm] = doc2dct_isPartOf(doc)
     layer[:dct_issued_s] = doc2dct_issued(doc)
     layer[:dct_provenance_s] = doc2dct_provenance(doc)
-    layer[:dct_references_s] = doc2dct_references(fgdc_file, doc)
+    layer[:dct_references_s] = doc2dct_references(fgdc_url, doc)
     layer[:dct_source_sm] = []
     layer[:dct_spatial_sm] = doc2dct_spatial(doc)
     layer[:dct_temporal_sm] = doc2dct_temporal(doc)
@@ -116,28 +106,24 @@ module Fgdc2Geobl
   #   https://github.com/geoblacklight/geoblacklight-schema
   #       /blob/master/docs/dct_references_schema.markdown
   # docs moved to:
-  # https://github.com/geoblacklight/geoblacklight/wiki/Schema
-  def doc2dct_references(fgdc_file, doc)
-
-    # basename = File.basename(fgdc_file, '.xml')
-
+  #   https://github.com/geoblacklight/geoblacklight/wiki/Schema
+  def doc2dct_references(fgdc_url, doc)
     dct_references = {}
+
     ###   12 possible keys.  
     ###   Which ones are we able to provide?
 
     # Only Public content has been loaded into GeoServer.
     # Restricted content is only available via Direct Download.
     if @dc_rights == 'Public'
-      # AND - Raster data is NEVER loaded into GeoServer.
+      # For Columbia, Raster data is NEVER loaded into GeoServer.
       layer_geom_type = doc2layer_geom_type(doc)
-      unless layer_geom_type == 'Raster'
+      if @provenance != 'Columbia' || layer_geom_type != 'Raster'
         # Web Mapping Service (WMS) 
         dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
-            # APP_CONFIG['geoserver_url'] + '/wms/sde'
             @geoserver_wms_url
         # Web Feature Service (WFS)
         dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
-            # APP_CONFIG['geoserver_url'] + '/sde/ows'
             @geoserver_wfs_url
       end
     end
@@ -149,18 +135,22 @@ module Fgdc2Geobl
         dct_references['http://schema.org/downloadUrl'] = onlink.text
       end
     end
-    # Full layer description
-    # Metadata in HTML
-    die "No APP_CONFIG['display_urls']['html']" unless APP_CONFIG['display_urls']['html']
-    dct_references['http://www.w3.org/1999/xhtml'] =
-        APP_CONFIG['display_urls']['html'] + "/#{@key}.html"
+
+    # This is unnecessary.  GeoBlacklight will already display FGDC XML
+    # in a prettily formatted HTML panel.  And the HTML metadata isn't
+    # downloadable - or anything else - in stock GeoBlacklight.
+    # None of the OpenGeoBlacklight institutions bother with this.
+    # # Full layer description
+    # # Metadata in HTML
+    # die "No APP_CONFIG['display_urls']['html']" unless APP_CONFIG['display_urls']['html']
+    # dct_references['http://www.w3.org/1999/xhtml'] =
+    #     APP_CONFIG['display_urls']['html'] + "/#{@key}.html"
+
     # # Metadata in ISO 19139
     # dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
     #     APP_CONFIG['display_urls']['iso19139'] + "/#{@key}.xml"
     # Metadata in FGDC
-    die "No APP_CONFIG['display_urls']['fgdc']" unless APP_CONFIG['display_urls']['fgdc']
-    dct_references['http://www.opengis.net/cat/csw/csdgm'] =
-        APP_CONFIG['display_urls']['fgdc'] + "/" + File.basename(fgdc_file)
+    dct_references['http://www.opengis.net/cat/csw/csdgm'] = fgdc_url
     # Metadata in MODS
     # ArcGIS FeatureLayer
     # ArcGIS TiledMapLayer
@@ -419,28 +409,28 @@ module Fgdc2Geobl
   # end
 
   #####################
-  def set_variables(repo, doc)
+  def set_variables(repo, nokogiri_doc)
     # fetch repo-specific configuration variables
     fgdc_mapping_constants = APP_CONFIG['fgdc_mapping_constants']
     abort "Missing fgdc_mapping_constants from app_config!" unless fgdc_mapping_constants.present?
     repo_config = fgdc_mapping_constants[repo]
     abort "Missing fgdc mapping details for repo #{repo} in app_config!" unless repo_config.present?
+
     @provenance         =  repo_config['provenance']
     @geoserver_wms_url  =  repo_config['geoserver_wms_url']
     @geoserver_wfs_url  =  repo_config['geoserver_wfs_url']
     @key_xpath          =  repo_config['key_xpath']
-  
-    
+      
     # the unique key for this metadata record
-    key = doc.xpath(@key_xpath)
+    key = nokogiri_doc.xpath(@key_xpath)
     key = key.text if key.class == Nokogiri::XML::NodeSet
     @key = key.to_s.strip
 
     # bounding coordinates
-    @northbc = doc.xpath("//idinfo/spdom/bounding/northbc").text.to_f
-    @southbc = doc.xpath("//idinfo/spdom/bounding/southbc").text.to_f
-    @eastbc = doc.xpath("//idinfo/spdom/bounding/eastbc").text.to_f
-    @westbc = doc.xpath("//idinfo/spdom/bounding/westbc").text.to_f
+    @northbc = nokogiri_doc.xpath("//idinfo/spdom/bounding/northbc").text.to_f
+    @southbc = nokogiri_doc.xpath("//idinfo/spdom/bounding/southbc").text.to_f
+    @eastbc = nokogiri_doc.xpath("//idinfo/spdom/bounding/eastbc").text.to_f
+    @westbc = nokogiri_doc.xpath("//idinfo/spdom/bounding/westbc").text.to_f
   end
 
 

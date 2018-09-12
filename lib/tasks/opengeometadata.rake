@@ -4,8 +4,9 @@
 
 namespace :opengeometadata do
   commit_within = (ENV['SOLR_COMMIT_WITHIN'] || 5000).to_i
-  ogm_path = ENV['OGM_PATH'] || 'tmp/opengeometadata'
+  ogm_path = ENV['OGM_PATH'] || 'public/opengeometadata'
   solr_url = ENV['SOLR_URL']
+  metadata_server = APP_CONFIG['metadata_server']
 
   core_repos = [
     'edu.stanford.purl',
@@ -13,17 +14,20 @@ namespace :opengeometadata do
     'edu.virginia',
     'big-ten',
   ]
-
-  repos = APP_CONFIG['opengeometadata_repos'] || core_repos
+  geobl_repos = (APP_CONFIG['opengeometadata_repos'] || core_repos).sort
+  fgdc_repos = (APP_CONFIG['opengeometadata_fgdc_repos'] || []).sort
+  all_repos = (geobl_repos + fgdc_repos).sort
   
   desc "Download OpenGeoMetadata for all configured institutions"
   task :fetch_all=> :environment do
     puts_datestamp "---- metadata:fetch_all ----"
-    repos.each do |repo|
+
+    all_repos.each do |repo|
       printf("-- Updating %s --\n", repo)
       Rake::Task["opengeometadata:fetch"].reenable
       Rake::Task["opengeometadata:fetch"].invoke(repo)
     end
+
   end
 
   desc 'Fetch a single OpenGeoMetadata repo (create or update)'
@@ -46,6 +50,17 @@ namespace :opengeometadata do
   end
   
 
+  desc "Transform OpenGeoMetadata FGDC to GeoBL for some institutions"
+  task :transform_all=> :environment do
+    puts_datestamp "---- metadata:transform_all ----"
+    fgdc_repos = APP_CONFIG['opengeometadata_fgdc_repos'] || []
+    fgdc_repos.each do |repo|
+      printf("-- Transforming %s --\n", repo)
+      Rake::Task["opengeometadata:transform"].reenable
+      Rake::Task["opengeometadata:transform"].invoke(repo)
+    end
+  end
+
 
   # Some OpenGeoMetadata repos provide FGDC, not GeoBlacklight JSON
   desc "Transform OpenGeoMetadata FGDC XML to GeoBlacklight Schema JSON"
@@ -65,6 +80,11 @@ namespace :opengeometadata do
     Find.find("#{ogm_path}/#{repo}") do |fgdc_file|
       next unless File.basename(fgdc_file) == 'fgdc.xml'
 
+      # e.g.:  /blah/blah/blah/public/opengeometadata/edu.tufts/192/125/94/208/fgdc.xml
+      # We need to turn this into:
+      # https://geoblah.columbia.edu/opengeometadata/edu.tufts/192/125/94/208/fgdc.xml
+      fgdc_url = metadata_server + fgdc_file.gsub(/.*opengeometadata/, '/opengeometadata')
+
       begin
         # The GeoBlacklight schema file will be the same basename, but json
         fgdc_xml = File.read(fgdc_file)
@@ -75,7 +95,7 @@ namespace :opengeometadata do
         set_variables(repo, nokogiri_doc)
 
         # Need the original funky XML filename, as well as the nokogiri doc
-        geobl_json = fgdc2geobl(fgdc_file, nokogiri_doc)
+        geobl_json = fgdc2geobl(fgdc_url, nokogiri_doc)
 
         doc_dir = File.dirname(fgdc_file)
         geobl_file = "#{doc_dir}/geoblacklight.json"
@@ -90,13 +110,11 @@ namespace :opengeometadata do
   end
 
 
-
-
   
   desc "Ingest OpenGeoMetadata for all configured institutions"
   task :ingest_all=> :environment do
     puts_datestamp "---- metadata:ingest_all ----"
-    repos.each do |repo|
+    all_repos.each do |repo|
       printf("-- Ingesting %s --\n", repo)
       Rake::Task["opengeometadata:ingest"].reenable
       Rake::Task["opengeometadata:ingest"].invoke(repo)
@@ -165,7 +183,7 @@ namespace :opengeometadata do
   desc "Prune stale OpenGeoMetadata records for all configured institutions"
   task :prune_all=> :environment do
     puts_datestamp "---- metadata:prune_all ----"
-    repos.each do |repo|
+    all_repos.each do |repo|
       printf("-- Pruning %s\n", repo)
       Rake::Task["opengeometadata:prune"].reenable
       Rake::Task["opengeometadata:prune"].invoke(repo)
@@ -217,11 +235,10 @@ namespace :opengeometadata do
     startTime = Time.now
     puts_datestamp "==== START opengeometadata:process ===="
 
-    repos.each do |repo|
-      Rake::Task["opengeometadata:fetch_all"].invoke
-      Rake::Task["opengeometadata:ingest_all"].invoke
-      Rake::Task["opengeometadata:prune_all"].invoke
-    end
+    Rake::Task["opengeometadata:fetch_all"].invoke
+    Rake::Task["opengeometadata:transform_all"].invoke
+    Rake::Task["opengeometadata:ingest_all"].invoke
+    Rake::Task["opengeometadata:prune_all"].invoke
 
     elapsed_seconds = (Time.now - startTime).round
     min, sec = elapsed_seconds.divmod(60)
