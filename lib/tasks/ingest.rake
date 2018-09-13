@@ -190,49 +190,49 @@ namespace :metadata do
 
   end
 
-  desc "Transform the FGDC XML to display HTML"
-  task :htmlize, [:file_pattern] => :environment do |t, args|
-    file_pattern = args[:file_pattern] || "."
-
-    # If we're doing a full re-generate of all documents, 
-    # then delete everything and rebuild from scratch
-    if file_pattern == '.'
-      FileUtils.rm_rf(fgdc_html_dir)
-      FileUtils.mkdir_p(fgdc_html_dir)
-    end
-
-    note = " of files matching /#{file_pattern}/" if file_pattern != '.'
-    puts "Begining htmlize#{note}..."
-    htmlized = 0
-    Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
-      next unless fgdc_file =~ /#{file_pattern}/
-      fgdc_basename = File.basename(fgdc_file)
-
-      puts " - #{fgdc_basename}" if file_pattern != '.'
-
-      begin
-        fgdc_xml = File.read(fgdc_file)
-        nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
-          config.strict.nonet
-        end
-        # Parse doc to set @key, etc.
-        set_variables('edu.columbia', nokogiri_doc)
-
-        fgdc_html = fgdc2html(nokogiri_doc)
-
-        # The HTML file will be name for the FGDC <resdesc> 
-        html_file = "#{fgdc_html_dir}#{@key}.html"
-        File.write(html_file, fgdc_html + "\n")
-        htmlized = htmlized + 1
-      rescue => ex
-        puts "ERROR: #{fgdc_file}: " + ex.message
-        puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
-      end
-    }
-
-    puts "Htmlized #{htmlized} files."
-
-  end
+  # desc "Transform the FGDC XML to display HTML"
+  # task :htmlize, [:file_pattern] => :environment do |t, args|
+  #   file_pattern = args[:file_pattern] || "."
+  # 
+  #   # If we're doing a full re-generate of all documents, 
+  #   # then delete everything and rebuild from scratch
+  #   if file_pattern == '.'
+  #     FileUtils.rm_rf(fgdc_html_dir)
+  #     FileUtils.mkdir_p(fgdc_html_dir)
+  #   end
+  # 
+  #   note = " of files matching /#{file_pattern}/" if file_pattern != '.'
+  #   puts "Begining htmlize#{note}..."
+  #   htmlized = 0
+  #   Dir.glob("#{fgdc_current}*.xml").each { |fgdc_file|
+  #     next unless fgdc_file =~ /#{file_pattern}/
+  #     fgdc_basename = File.basename(fgdc_file)
+  # 
+  #     puts " - #{fgdc_basename}" if file_pattern != '.'
+  # 
+  #     begin
+  #       fgdc_xml = File.read(fgdc_file)
+  #       nokogiri_doc  = Nokogiri::XML(fgdc_xml) do |config|
+  #         config.strict.nonet
+  #       end
+  #       # Parse doc to set @key, etc.
+  #       set_variables('edu.columbia', nokogiri_doc)
+  # 
+  #       fgdc_html = fgdc2html(nokogiri_doc)
+  # 
+  #       # The HTML file will be name for the FGDC <resdesc> 
+  #       html_file = "#{fgdc_html_dir}#{@key}.html"
+  #       File.write(html_file, fgdc_html + "\n")
+  #       htmlized = htmlized + 1
+  #     rescue => ex
+  #       puts "ERROR: #{fgdc_file}: " + ex.message
+  #       puts "  " + ex.backtrace.select{ |x| x.match(/#{Rails.root}/) }.first
+  #     end
+  #   }
+  # 
+  #   puts "Htmlized #{htmlized} files."
+  # 
+  # end
 
   desc "Transform the FGDC XML to GeoBlacklight Schema XML"
   task :transform, [:file_pattern] => :environment do |t, args|
@@ -283,9 +283,10 @@ namespace :metadata do
   desc "Ingest the GeoBlacklight Schema XML"
   task :ingest, [:file_pattern] => :environment do |t, args|
     file_pattern = args[:file_pattern] || "."
+    solr_url = Blacklight.connection_config[:url]
 
-    puts "Connecting to Solr..."
-    solr = RSolr.connect :url => Blacklight.connection_config[:url]
+    puts "Connecting to Solr (#{solr_url})..."
+    solr = RSolr.connect url: solr_url
     puts "solr=#{solr}"
 
     note = " of files matching /#{file_pattern}/" if file_pattern != '.'
