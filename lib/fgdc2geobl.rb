@@ -263,19 +263,18 @@ module Fgdc2Geobl
 
   # Suggested vocabulary: Shapefile, GeoTIFF, ArcGRID
   def doc2dc_format(doc)
-
     # blacklight-schema's 2_transform.rb determines Format based on Layer Geometry
     layer_geom_type = doc2layer_geom_type(doc)
-    return 'GeoTiff' if layer_geom_type.match /Raster/i
+    return 'GeoTIFF' if layer_geom_type.match /Raster/i
     return 'Shapefile' if layer_geom_type.match /Point|Line|Polygon/i
     return 'Paper' if layer_geom_type.match /Paper/i
 
     geoform = doc.xpath("//metadata/idinfo/citation/citeinfo/geoform").text.strip
-    return "GeoTiff" if geoform.match /raster digital data/i
+    return "GeoTIFF" if geoform.match /raster digital data/i
     return "Shapefile" if geoform.match /vector digital data/i
 
     formname = doc.xpath("//metadata/distinfo/stdorder/digform/digtinfo/formname").text.strip
-    return "GeoTiff" if formname.match /TIFF/i
+    return "GeoTIFF" if formname.match /TIFF/i
     return "Shapefile" if formname.match /Shape/i
 
     # OK, just return whatever crazy string is in the geoform/formname

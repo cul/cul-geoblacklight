@@ -9,7 +9,7 @@ include Fgdc2Html
 
 # Keep one older iteration - very useful for debugging
 tmpdir = '/tmp'
-metadata_server = APP_CONFIG['metadata_server']
+metadata_server = APP_CONFIG['metadata_server'] || abort('metadata_server undefined!')
 fgdc_current = File.join(Rails.root, "public/metadata/fgdc/current/")
 fgdc_old = File.join(Rails.root, "public/metadata/fgdc/old/")
 fgdc_html_dir = File.join(Rails.root, "public/metadata/fgdc/html/")

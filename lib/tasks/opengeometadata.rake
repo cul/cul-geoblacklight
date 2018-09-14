@@ -6,7 +6,7 @@ namespace :opengeometadata do
   commit_within = (ENV['SOLR_COMMIT_WITHIN'] || 5000).to_i
   ogm_path = ENV['OGM_PATH'] || 'public/opengeometadata'
   solr_url = ENV['SOLR_URL']
-  metadata_server = APP_CONFIG['metadata_server']
+  metadata_server = APP_CONFIG['metadata_server'] || abort('metadata_server undefined!')
 
   core_repos = [
     'edu.stanford.purl',
@@ -84,7 +84,6 @@ namespace :opengeometadata do
       # We need to turn this into:
       # https://geoblah.columbia.edu/opengeometadata/edu.tufts/192/125/94/208/fgdc.xml
       fgdc_url = metadata_server + fgdc_file.gsub(/.*opengeometadata/, '/opengeometadata')
-
       begin
         # The GeoBlacklight schema file will be the same basename, but json
         fgdc_xml = File.read(fgdc_file)
