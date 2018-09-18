@@ -186,6 +186,15 @@ namespace :opengeometadata do
       printf("-- Pruning %s\n", repo)
       Rake::Task["opengeometadata:prune"].reenable
       Rake::Task["opengeometadata:prune"].invoke(repo)
+
+      puts "Optimizing..."
+      begin
+        solr = RSolr.connect url: Blacklight.connection_config[:url]
+        solr.optimize
+      rescue RSolr::Error::Http, Faraday::TimeoutError, Net::ReadTimeout
+        # no-op
+      end
+      puts "Done."
     end
   end
 
@@ -216,16 +225,17 @@ namespace :opengeometadata do
 
     puts "Committing..."
     solr.commit
-    puts "Optimizing..."
-    begin
-      solr.optimize
-    rescue Net::ReadTimeout
-      # Not a problem really - we kicked off an optimization,
-      # it'll take a while to complete.
-      puts "-- lost server connectivity during optimization"
-    rescue => ex
-      puts "Error during optimization: " + ex.message + "(#{ex.class})"
-    end
+    # Optimize during prune_all, not after each institution.
+    # puts "Optimizing..."
+    # begin
+    #   solr.optimize
+    # rescue Net::ReadTimeout
+    #   # Not a problem really - we kicked off an optimization,
+    #   # it'll take a while to complete.
+    #   puts "-- lost server connectivity during optimization"
+    # rescue => ex
+    #   puts "Error during optimization: " + ex.message + "(#{ex.class})"
+    # end
     puts "Done."
   end
 

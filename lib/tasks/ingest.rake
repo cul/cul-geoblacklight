@@ -312,8 +312,9 @@ namespace :metadata do
 
     puts "Committing..."
     solr.commit
-    puts "Optimizing..."
-    solr.optimize
+    # no, optimize only after deletes, not after adds
+    # puts "Optimizing..."
+    # solr.optimize
     puts "Done."
   end
   
@@ -340,7 +341,11 @@ namespace :metadata do
     puts "Committing..."
     solr.commit
     puts "Optimizing..."
-    solr.optimize
+    begin
+      solr.optimize
+    rescue RSolr::Error::Http, Faraday::TimeoutError, Net::ReadTimeout
+      # no-op
+    end
     puts "Done."
   end
 
