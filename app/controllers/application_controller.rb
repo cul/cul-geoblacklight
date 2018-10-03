@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     end
     
     # Full CAS logout + application logout page looks like this:
-    # http://cas.columbia.edu/cas/logout?service=https://helpdesk.cul.columbia.edu/welcome/logout
+    # https://cas.columbia.edu/cas/logout?service=https://helpdesk.cul.columbia.edu/welcome/logout
     cas_logout_url = 'https://' + cas_opts['host'] + cas_opts['logout_url']
     service = request.base_url
     after_sign_out_path = "#{cas_logout_url}?service=#{service}"
