@@ -94,7 +94,8 @@ gem 'rsolr'
 gem 'devise', '~> 4.4.0'
 
 # gem 'cul_omniauth'
-gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
+# gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
+gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'cas-5.3'
 
 # necessary to quiet a cul_omniauth exception
 gem 'rspec'
@@ -113,3 +114,10 @@ gem 'whenever'
 
 # Rails 5 requirement
 gem 'listen'
+
+# pin SASS - CUL linux hosts can't yet compile sassc
+gem 'bootstrap-sass',  '~> 3.3.0'
+
+# Javascript runtime, as a gem, doesn't depend on OS environment
+gem 'therubyracer'
+

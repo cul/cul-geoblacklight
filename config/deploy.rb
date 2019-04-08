@@ -35,6 +35,11 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp', 'public/metadata', 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+# Defaults to nil (no asset cleanup is performed)
+# If you use Rails 4+ and you'd like to clean up old assets after each deploy,
+# set this to the number of versions to keep
+set :keep_assets, 1
+
 # restart passenger with 'touch tmp/restart.txt' instead of 'passenger-config restart-app'
 set :passenger_restart_with_touch, true
 
