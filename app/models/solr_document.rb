@@ -20,4 +20,17 @@ class SolrDocument
   # Recommendation: Use field names from Dublin Core
   use_extension( Blacklight::Document::DublinCore)    
 
+  # LIBSYS-2023 - Email option for Geodata@Columbia
+  # Blacklight's default to_email_text() method outputs title, author, format, and language.
+  # GeoBlacklight doesn't have a language, but has the other three.
+  field_semantics.merge!(
+    title: 'dc_title_s',
+    author: 'dc_creator_sm',
+    # contributor: 'author_display',
+    # publisher: 'full_publisher_display',
+    # language: 'language_facet',
+    format: 'dc_format_s',
+    # date: 'pub_date_sort'
+  )
+
 end
