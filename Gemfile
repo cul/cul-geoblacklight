@@ -104,7 +104,8 @@ gem 'rspec'
 gem 'geo_combine'
 
 # server deployments use mysql backend db
-gem 'mysql2'
+# UNIX-7336 - Inconsistent MySQL Client Versions
+gem 'mysql2', '0.5.2'
 
 # To fetch Columbia directory information
 gem 'net-ldap'
