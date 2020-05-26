@@ -4,6 +4,7 @@
 config/app_config.yml
 config/blacklight.yml
 config/solr.yml
+config/cas.yml
 config/database.yml
 config/secrets.yml
 
