@@ -121,7 +121,7 @@ gem 'whenever'
 gem 'listen'
 
 # pin SASS - CUL linux hosts can't yet compile sassc
-gem 'bootstrap-sass',  '~> 3.3.0'
+gem 'bootstrap-sass',  '~> 3.4.1'
 
 # Javascript runtime, as a gem, doesn't depend on OS environment
 gem 'therubyracer'
