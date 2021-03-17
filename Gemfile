@@ -16,6 +16,10 @@ gem 'sass-rails', '~> 5.0'
 # But... doesn't build with our servers' gcc 4.4.7
 # gem 'sassc-rails'
 
+# dependency of many other gems
+# need to pin to 1.10, due to old libc on CentOS 6
+gem 'nokogiri', '~> 1.10.0'
+
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
 
