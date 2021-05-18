@@ -18,7 +18,7 @@ gem 'sass-rails', '~> 5.0'
 
 # dependency of many other gems
 # need to pin to 1.10, due to old libc on CentOS 6
-gem 'nokogiri', '~> 1.10.0'
+gem 'nokogiri', '~> 1.11.4'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
