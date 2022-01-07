@@ -80,7 +80,7 @@ gem 'blacklight'
 
 # DEBUG locally
 # gem 'geoblacklight', path: "/Users/marquis/src/geoblacklight"
-gem 'geoblacklight'
+gem 'geoblacklight', '~> 1.0'
 
 gem 'blacklight_range_limit'
 
