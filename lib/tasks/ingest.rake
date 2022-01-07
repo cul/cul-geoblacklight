@@ -24,7 +24,7 @@ namespace :metadata do
 
     begin
       puts "Downloading #{FGDC_METADATA_URL}..."
-      download = open(FGDC_METADATA_URL)
+      download = URI.open(FGDC_METADATA_URL)
       IO.copy_stream(download, "#{tmpdir}/metadata.zip")
       puts "Download successful."
     rescue => ex
@@ -73,11 +73,11 @@ namespace :metadata do
     http_dir  = '/www/data/acis/eds/gis/images'
     https_dir  = '/wwws/data/acis/eds/dgate/studies/C1301/data'
 
-    ssh_cmd = "ssh -l litoserv #{host} /bin/ls #{http_dir}"
+    ssh_cmd = "ssh -q -l litoserv #{host} /bin/ls #{http_dir}"
     output = `#{ssh_cmd}`
     http_files = output.split("\n").sort
 
-    ssh_cmd = "ssh -l litoserv #{host} /bin/ls #{https_dir}"
+    ssh_cmd = "ssh -q -l litoserv #{host} /bin/ls #{https_dir}"
     output = `#{ssh_cmd}`
     https_files = output.split("\n").sort
 
@@ -128,7 +128,7 @@ namespace :metadata do
 
     capabilities_url = APP_CONFIG['geoserver_url'] +
                        '/sde/ows?service=WFS&request=GetCapabilities'
-    capabilities_doc = Nokogiri::XML(open(capabilities_url))
+    capabilities_doc = Nokogiri::XML(URI.open(capabilities_url))
 
     layer_name_xpath = '//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name'
     all_layer_names = []
