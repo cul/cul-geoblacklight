@@ -7,8 +7,12 @@
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 
-server 'geoblacklight-dev.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
-set :deploy_to, '/opt/passenger/lito/geoblacklight_dev'
+# server 'geoblacklight-dev.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
+# set :deploy_to, '/opt/passenger/lito/geoblacklight_dev'
+
+server 'lito-rails-dev1.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
+set :deploy_to, '/opt/passenger/geoblacklight_dev'
+set :rvm_ruby_version, 'geoblacklight_alma'
 
 
 # role-based syntax
