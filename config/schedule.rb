@@ -10,7 +10,7 @@ set :environment, Rails.env
 # Give our jobs nice subject lines
 set :subject, 'cron output'
 set :recipient, 'geodata@library.columbia.edu'
-set :job_template, "mailifoutput -s ':subject (:environment)' :recipient /bin/bash -l -c ':job'"
+set :job_template, "/home/litoserv/bin/mailifoutput -s ':subject (:environment)' :recipient /bin/bash -l -c ':job'"
 
 # Rake jobs need to use the GeoBlacklight verion of Ruby commands
 set :bundle_command, '~/.rvm/wrappers/geoblacklight/bundle exec'
