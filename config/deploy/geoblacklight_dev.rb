@@ -12,7 +12,7 @@
 
 server 'lito-rails-dev1.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
 set :deploy_to, '/opt/passenger/geoblacklight_dev'
-set :rvm_ruby_version, 'geoblacklight_alma'
+set :rvm_ruby_version, 'geoblacklight_dev'
 
 
 # role-based syntax
