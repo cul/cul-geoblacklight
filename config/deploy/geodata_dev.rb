@@ -11,8 +11,8 @@
 # set :deploy_to, '/opt/passenger/lito/geoblacklight_dev'
 
 server 'lito-rails-dev1.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
-set :deploy_to, '/opt/passenger/geoblacklight_dev'
-set :rvm_ruby_version, 'geoblacklight_dev'
+set :deploy_to, '/opt/passenger/geodata_dev'
+set :rvm_ruby_version, 'geodata_dev'
 
 
 # role-based syntax
