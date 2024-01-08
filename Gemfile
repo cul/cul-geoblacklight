@@ -1,24 +1,17 @@
 source 'https://rubygems.org'
 
-# https://github.com/bundler/bundler/blob/3e3f64f1166c4613329495459793dbd5a714efd3/lib/bundler/dsl.rb#L254-L266
-git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
-  "https://github.com/#{repo_name}.git"
-end
-
-
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0'
 
-# # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
-# sass-rails is deprecated, move to sassc-rails
-# But... doesn't build with our servers' gcc 4.4.7
-# gem 'sassc-rails'
+# # # Use SCSS for stylesheets
+# gem 'sass-rails', '~> 5.0'
+# # sass-rails is deprecated, move to sassc-rails
+# # But... doesn't build with our servers' gcc 4.4.7
+# # gem 'sassc-rails'
 
-# dependency of many other gems
-# need to pin to 1.10, due to old libc on CentOS 6
-gem 'nokogiri', '~> 1.10.0'
+# AlmaLinux
+gem 'sassc-rails'
+
+gem 'nokogiri'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
@@ -92,14 +85,12 @@ gem 'rsolr'
 # We don't use a local jetty/solr
 # gem 'jettywrapper'
 
-
 # Authentication
-# gem 'devise', '~> 3.0'
-gem 'devise', '~> 4.4.0'
+gem 'devise'
 
 # gem 'cul_omniauth'
 # gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
-gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'cas-5.3'
+gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'cas-5.3'
 
 # necessary to quiet a cul_omniauth exception
 gem 'rspec'
@@ -109,7 +100,7 @@ gem 'geo_combine'
 
 # server deployments use mysql backend db
 # UNIX-7336 - Inconsistent MySQL Client Versions
-gem 'mysql2', '0.5.2'
+gem 'mysql2'
 
 # To fetch Columbia directory information
 gem 'net-ldap'
