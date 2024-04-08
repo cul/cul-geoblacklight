@@ -1,28 +1,102 @@
-== README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+Notes on GeoData / GeoServer
+----------------------------
+
+
+HOW DOES ALL THIS FIT TOGETHER???
+
+
+(1) GeoData - the Blacklight application - 5,487 XML files
+
+marquis@daisy metadata % ls *xml |wc -l
+    5487
+
+searches against Solr index
+Solr index created by indexing "metadata.zip"
+metadata.zip is manually constructed zip of FGDC XML files
+
+marquis@daisy metadata % ls -1 *angola*
+cul_scannedpublic_1970_angola.xml
+fewsn_1996_angolaadmn1.xml
+fewsn_1996_angolaadmn2.xml
+fewsn_1996_angolaadmn3.xml
+
+
+
+(2) GeoServer - the datastore for layers - 2,338 items
+
+Search for "angola" returns:
+	
+    Name                                 Title
+  sde:columbia.angolaadmn1	             angolaadmn1	
+	sde:columbia.angolaadmn2	             angolaadmn2	
+	sde:columbia.angolaadmin3	             angolaadmn3	
+
+	sde:columbia.fewsn_1996_angolaadmn1	   fewsn_1996_angolaadmn1	
+	sde:columbia.fewsn_1996_angolaadmn2	   fewsn_1996_angolaadmn2	
+	sde:columbia.fewsn_1996_angolaadmn3	   fewsn_1996_angolaadmn3	
+
+-- GeoServer "Data Directory" has 2,324 items
+
+    [root@dssc-geoserver-prod1 sde]# pwd
+
+    /cul/cul0/dssc/geoserver/working/dssc-geoserver-prod1.cul.columbia.edu/geoserver/workspaces/sde/sde
+    [root@dssc-geoserver-prod1 sde]# ls |grep 'columbia\.' |wc -l
+    2324
+
+    [root@dssc-geoserver-prod1 sde]# ls -ld *angola*
+    drwxr-sr-x 2 dsscserv dsscserv 4096 Aug  9  2017 columbia.angolaadmin3
+    drwxr-sr-x 2 dsscserv dsscserv 4096 Jun  2  2015 columbia.angolaadmn1
+    drwxr-sr-x 2 dsscserv dsscserv 4096 Feb  5  2015 columbia.angolaadmn2
+    drwxr-sr-x 2 dsscserv dsscserv 4096 May  4  2020 columbia.fewsn_1996_angolaadmn1
+    drwxr-sr-x 2 dsscserv dsscserv 4096 May  4  2020 columbia.fewsn_1996_angolaadmn2
+    drwxr-sr-x 2 dsscserv dsscserv 4096 May  4  2020 columbia.fewsn_1996_angolaadmn3
+
+
+
+
+(3) PostGIS - database tracking of _some_ layers (1636 layer tables)
+
+
+postgres=# select * from pg_catalog.pg_tables where tablename like '%angola%'; 
+ schemaname |  tablename  | tableowner | tablespace | hasindexes | hasrules | hastriggers 
+------------+-------------+------------+------------+------------+----------+-------------
+ public     | angolaadmn1 | dssc       |            | t          | f        | f
+ public     | angolaadmn2 | dssc       |            | t          | f        | f
+ public     | angolaadmn3 | dssc       |            | t          | f        | f
+(3 rows)
+
+
+postgres=#  select count(*) from pg_catalog.pg_tables where tableowner = 'dssc';
+ count 
+-------
+  1636
+(1 row)
+
+----------
+AHA:
+
+https://geoserver-users.narkive.com/GyU9ZH0W/rest-api-feature-type-creation
+
+  "you should create the second feature type using the same *nativeName* 
+   (i.e. the table name in the DB), but a different *name*."
+
+
+[dsscserv@lito-geoserver-prod1 geoserver]$ pwd
+/cul/cul0/dssc/geoserver/working/dssc-geoserver-prod1.cul.columbia.edu/geoserver
+
+[dsscserv@lito-geoserver-prod1 geoserver]$ grep angolaadm workspaces/sde/sde/columbia.*angolaadm*3/featuretype.xml
+workspaces/sde/sde/columbia.angolaadmin3/featuretype.xml:  <name>columbia.angolaadmin3</name>
+workspaces/sde/sde/columbia.angolaadmin3/featuretype.xml:  <nativeName>angolaadmn3</nativeName>
+workspaces/sde/sde/columbia.angolaadmin3/featuretype.xml:  <title>angolaadmn3</title>
+workspaces/sde/sde/columbia.angolaadmin3/featuretype.xml:    <string>angolaadmn3</string>
+
+workspaces/sde/sde/columbia.fewsn_1996_angolaadmn3/featuretype.xml:  <name>columbia.fewsn_1996_angolaadmn3</name>
+workspaces/sde/sde/columbia.fewsn_1996_angolaadmn3/featuretype.xml:  <nativeName>angolaadmn3</nativeName>    <--- LOOK AT THIS
+workspaces/sde/sde/columbia.fewsn_1996_angolaadmn3/featuretype.xml:  <title>fewsn_1996_angolaadmn3</title>
+workspaces/sde/sde/columbia.fewsn_1996_angolaadmn3/featuretype.xml:    <string>angolaadmn3</string>
+
+
+
+
