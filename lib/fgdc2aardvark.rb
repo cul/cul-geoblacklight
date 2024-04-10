@@ -144,7 +144,7 @@ module Fgdc2Aardvark
       begdate = rngdates.xpath("begdate").text[0..3]
       enddate = rngdates.xpath("enddate").text[0..3]
       if begdate.match(/\d\d\d\d/) and enddate.match(/\d\d\d\d/)
-        begdate + " TO " + enddate
+        "[" + begdate + " TO " + enddate + "]"
       end
     end
   end
@@ -236,10 +236,11 @@ module Fgdc2Aardvark
 
     # Only Public content has been loaded into GeoServer.
     # Restricted content is only available via Direct Download.
-    if @dc_rights == 'Public'
-      # For Columbia, Raster data is NEVER loaded into GeoServer.
-      layer_geom_type = doc2layer_geom_type(doc)
-      if @provenance != 'Columbia' || layer_geom_type != 'Raster'
+    if doc2dct_rights_sm(doc) == 'Public'
+      # For Columbia, only include GeoServer links for non-Raster data.
+      # For all other institutions, include GeoServer links for all data.
+      if (@provenance == 'Columbia' && doc2dct_format_s(doc) == 'Shapefile') ||
+         (@provenance != 'Columbia')
         # Web Mapping Service (WMS) 
         dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
             @geoserver_wms_url
