@@ -88,6 +88,7 @@ module Fgdc2Aardvark
   end
 
   def doc2schema_provider_s(doc)
+    @provenance
   end
 
   def doc2gbl_resourceClass_sm(doc)
