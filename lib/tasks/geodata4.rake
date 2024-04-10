@@ -10,8 +10,8 @@ require 'net/ssh'
 # require 'fgdc2html'
 # include Fgdc2Html
 
-# require 'fgdc2aardvark'
-# include Fgdc2Aardvark
+require 'fgdc2aardvark'
+include Fgdc2Aardvark
 
 # Keep one older iteration - very useful for debugging
 tmpdir = '/tmp'

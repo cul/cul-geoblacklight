@@ -44,7 +44,7 @@ module Fgdc2Aardvark
     layer[:dct_license_sm] = doc2dct_license_sm(doc)
     layer[:dct_accessRights_s] = doc2dct_accessRights_s(doc)
     layer[:dct_format_s] = doc2dct_format_s(doc)
-    layer[:dct_references_s] = doc2dct_references_s(doc)
+    layer[:dct_references_s] = doc2dct_references_s(doc, fgdc_url)
     layer[:gbl_wxsIdentifier_s] = doc2gbl_wxsIdentifier_s(doc)
     layer[:id] = doc2id(doc)
     layer[:dct_identifier_sm] = doc2dct_identifier_sm(doc)
@@ -228,7 +228,7 @@ module Fgdc2Aardvark
     return "UNDETERMINED"
   end
 
-  def doc2dct_references_s(doc)
+  def doc2dct_references_s(doc, fgdc_url)
     dct_references = {}
 
     ###   12 possible keys.  
