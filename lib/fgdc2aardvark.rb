@@ -3,6 +3,8 @@ module Fgdc2Aardvark
 #   https://opengeometadata.org/aardvark-fgdc-iso-crosswalk/
 # Borrowing from:
 # https://github.com/OpenGeoMetadata/GeoCombine/blob/draft_fgdc2Aardvark/lib/xslt/fgdc2Aardvark_draft_v1.xsl
+# Detailed documentation on each Aardvark field:
+#   https://opengeometadata.org/ogm-aardvark/
 
   # input args:
   #   fgdc_url - publicly accessible URL to FGDC XML
@@ -43,6 +45,7 @@ module Fgdc2Aardvark
     layer[:dct_accessRights_s] = doc2dct_accessRights_s(doc)
     layer[:dct_format_s] = doc2dct_format_s(doc)
     layer[:dct_references_s] = doc2dct_references_s(doc)
+    layer[:gbl_wxsIdentifier_s] = doc2gbl_wxsIdentifier_s(doc)
     layer[:id] = doc2id(doc)
     layer[:dct_identifier_sm] = doc2dct_identifier_sm(doc)
     layer[:gbl_mdModified_dt] = doc2gbl_mdModified_dt(doc)
@@ -138,7 +141,11 @@ module Fgdc2Aardvark
 
   def doc2gbl_dateRange_drsim(doc)
     if rngdates = doc.at_xpath("//idinfo/timeperd/timeinfo/rngdates")
-      rngdates.xpath("begdate").text[0..3] + "-" + rngdates.xpath("enddate").text[0..3]
+      begdate = rngdates.xpath("begdate").text[0..3]
+      enddate = rngdates.xpath("enddate").text[0..3]
+      if begdate.match(/\d\d\d\d/) and enddate.match(/\d\d\d\d/)
+        begdate + " TO " + enddate
+      end
     end
   end
 
@@ -222,11 +229,86 @@ module Fgdc2Aardvark
   end
 
   def doc2dct_references_s(doc)
+    dct_references = {}
+
+    ###   12 possible keys.  
+    ###   Which ones are we able to provide?
+
+    # Only Public content has been loaded into GeoServer.
+    # Restricted content is only available via Direct Download.
+    if @dc_rights == 'Public'
+      # For Columbia, Raster data is NEVER loaded into GeoServer.
+      layer_geom_type = doc2layer_geom_type(doc)
+      if @provenance != 'Columbia' || layer_geom_type != 'Raster'
+        # Web Mapping Service (WMS) 
+        dct_references['http://www.opengis.net/def/serviceType/ogc/wms'] =
+            @geoserver_wms_url
+        # Web Feature Service (WFS)
+        dct_references['http://www.opengis.net/def/serviceType/ogc/wfs'] =
+            @geoserver_wfs_url
+      end
+    end
+
+    # International Image Interoperability Framework (IIIF) Image API
+    # Direct download file
+    if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
+      if onlink.text.match /.columbia.edu/
+        dct_references['http://schema.org/downloadUrl'] = onlink.text
+      end
+    end
+
+    # This is unnecessary.  GeoBlacklight will already display FGDC XML
+    # in a prettily formatted HTML panel.  And the HTML metadata isn't
+    # downloadable - or anything else - in stock GeoBlacklight.
+    # None of the OpenGeoBlacklight institutions bother with this.
+    # # Full layer description
+    # # Metadata in HTML
+    # die "No APP_CONFIG['display_urls']['html']" unless APP_CONFIG['display_urls']['html']
+    # dct_references['http://www.w3.org/1999/xhtml'] =
+    #     APP_CONFIG['display_urls']['html'] + "/#{@key}.html"
+
+    # # Metadata in ISO 19139
+    # dct_references['http://www.isotc211.org/schemas/2005/gmd/'] =
+    #     APP_CONFIG['display_urls']['iso19139'] + "/#{@key}.xml"
+    # Metadata in FGDC
+    dct_references['http://www.opengis.net/cat/csw/csdgm'] = fgdc_url
+    # Metadata in MODS
+    # ArcGIS FeatureLayer
+    # ArcGIS TiledMapLayer
+    # ArcGIS DynamicMapLayer
+    # ArcGIS ImageMapLayer
+
+    return dct_references.compact.to_json.to_s
   end
 
+  # Purpose: To identify the layer or store for a WFS, WMS, or WCS web service so the application can construct the full web service link.
+  # Entry Guidelines: Only the layer name is added here. The base service endpoint URLs (e.g. "https://maps-public.geo.nyu.edu/geoserver/sdr/wms") are added to the References field.
+  # Commentary: This value is only used when a WxS service is listed in the References field. The WxS Identifer is used to point to specific layers within an OGC geospatial web service. This field is not used for ArcGIS Rest Services.
+  def doc2gbl_wxsIdentifier_s(doc)
+    case @provenance
+    when 'Columbia'
+      "sde:columbia.#{@key}".html_safe
+    when 'Harvard'
+      @key.html_safe
+    when 'Tufts'
+      "sde:GISPORTAL.GISOWNER01.#{@key.upcase}"
+    else
+      raise "ERROR:  doc2layer_id() got unknown provenance @provenance"
+    end
+  end
+  
+  # Purpose: To provide a unique alpha-numeric ID for the item that will act as the primary key in Solr and to create a unique landing page for the item.
+  # Entry Guidelines: Enter a string of alpha-numeric characters separated by dashes. The ID must be globally unique across all institutions in your GeoBlacklight index.
+  # Commentary: This field makes up the URL for the resource in GeoBlacklight. It is visible to the user and is used to create permalinks. If having a readable slug is desired, it is common to use the form institution-keyword1-keyword2.
   def doc2id(doc)
+    identifier = "#{@provenance}-#{@key}".downcase
+    identifier.gsub!(/[^A-Za-z0-9]/, '-')
+    return identifier
   end
 
+  # Purpose: To provide a general purpose field for identifiers.
+  # Entry Guidelines: Enter a DOI, catalog number, and/or other system number.
+  # Commentary: This is a general purpose field that can contain one or more string values. Ideally, at least one value would be a persistent identifier or permalink (such as a PURL or Handle). Additional values could be other identifiers used by the resource, such as the call number, OCLC number, or other system identifier. This field is not displayed in the interface.
   def doc2dct_identifier_sm(doc)
     identifier = "#{@provenance}.#{@key}"
     # We'd begun with a more complex identifier locally.
