@@ -1,11 +1,4 @@
-
-// Follow styling suggestions from
-// http://geoblacklight.org/tutorial/2015/02/09/customize-your-application.html
-
+@import 'customizations';
+@import 'bootstrap';
 @import 'blacklight';
 @import 'geoblacklight';
-
-// Columbia-specific branding
-@import 'branding';
-@import 'topnavbar';
-

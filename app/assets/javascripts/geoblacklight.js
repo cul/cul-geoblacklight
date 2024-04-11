@@ -5,7 +5,5 @@
 //= require geoblacklight/viewers
 //= require geoblacklight/modules
 //= require geoblacklight/downloaders
-//= require blacklight_range_limit
 //= require leaflet-iiif
 //= require esri-leaflet
-//= require readmore.min
