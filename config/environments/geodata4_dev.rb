@@ -76,7 +76,5 @@ Rails.application.configure do
   
   # Whitelist alternate names for localhost development
   config.hosts << 'cliobeta.columbia.edu'
-  config.hosts << 'geodata-dev.cul.columbia.edu'
-  config.hosts << 'geodata4-dev.cul.columbia.edu'
   
 end
