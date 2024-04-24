@@ -15,12 +15,16 @@ Rails.application.routes.draw do
 
   # cul_omniauth authentication
   # devise_for :users
-  devise_for :users, controllers: { sessions: 'users/sessions', :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_for :users, controllers: { 
+    sessions: 'users/sessions', 
+    omniauth_callbacks: 'users/omniauth_callbacks'
+  }
 
-  devise_scope :user do
-    get 'sign_in',  to: 'users/sessions#new',     as: :new_user_session
-    get 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
-  end
+  # already defined implicitly
+  # devise_scope :user do
+  #   get 'sign_in',  to: 'users/sessions#new',     as: :new_user_session
+  #   get 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
+  # end
 
   # Runtime systems details
   get 'admin/system'

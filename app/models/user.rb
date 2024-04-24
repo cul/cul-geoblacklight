@@ -10,6 +10,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  serialize :affils, Array
+
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account.
@@ -18,10 +20,14 @@ class User < ApplicationRecord
   end
 
 
-  def default_email
-    if self.login
-      self.email = "#{self.login}@columbia.edu"
-    end
+  def email
+    self.email = "#{self.uid}@columbia.edu"
+    # if self.login
+    #   self.email = "#{self.login}@columbia.edu"
+    # end
+    # if self.uid
+    #   self.email = "#{self.uid}@columbia.edu"
+    # end
   end
 
   # Password methods required by Devise.

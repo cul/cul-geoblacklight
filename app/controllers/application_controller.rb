@@ -1,4 +1,11 @@
 class ApplicationController < ActionController::Base
+
+  # CUL authentication
+  include Devise::Controllers::Helpers
+  devise_group :user, contains: [:user]
+  # before_action :authenticate_user!, if: :devise_controller?
+
+
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   layout :determine_layout if respond_to? :layout

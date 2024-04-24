@@ -8,7 +8,7 @@ ruby '3.2.2'
 # ======== ======== ========
 
 # Authentication
-gem 'devise'
+gem 'omniauth', '~> 1.0'
 gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'rails-6'
 
 group :geodata_dev do
@@ -16,6 +16,11 @@ group :geodata_dev do
   gem 'mysql2'
 end
 
+# debugging
+group :development do
+  gem "better_errors"
+  gem "binding_of_caller"
+end
  
 # ======== ======== ========
 # ======== ======== ========
