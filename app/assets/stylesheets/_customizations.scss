@@ -1,7 +1,8 @@
 // Local Application Customizations
 
 // Set Header Logo
-$logo-image: image_url('blacklight/logo.svg') !default;
+// $logo-image: image_url('blacklight/logo.svg') !default;
+$logo-image: image_url('logo.png') !default;
 
 .navbar-brand {  /* The main logo image for the Blacklight instance */
   @if $logo-image {
@@ -27,3 +28,98 @@ $dark:    #212529 !default; // $gray-900
 
 // Example: Bootstrap Link color
 $link-color: $blue;
+
+// Columbia
+
+// official colors
+$culDarkBlue:          #002B7F;
+// $culDarkerBlue:        #002BAA;
+$culLightBlue:         #779BC3;
+// $culLighterBlue:       #75AADB;
+
+@font-face {
+  font-family: 'TrajanProRegular';
+  src: asset-url('trajanpro-regular-webfont.eot');
+  src: asset-url('trajanpro-regular-webfont.eot?#iefix') format('embedded-opentype'), asset-url('trajanpro-regular-webfont.woff') format('woff'), asset-url('trajanpro-regular-webfont.ttf') format('truetype'), asset-url('trajanpro-regular-webfont.svg#TrajanProRegular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+
+// Styling for the Columbia-added dark-blue top bar, added above the GeoBlacklight top nav bar
+#columbiaTopNavBar {
+  
+  background-color: $culDarkBlue;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+
+  
+  .dropdown-menu {
+    background-color: $culDarkBlue;
+    border-color: $culDarkBlue;
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    font-size: 14px;
+  }
+
+  // http://stackoverflow.com/questions/19576175/how-do-you-decrease-navbar-height
+  padding-top:    0;
+  padding-bottom: 0;
+  font-size: smaller;
+  line-height: 1em;
+
+
+  .topbarlogo {
+    font-family: TrajanProRegular, trajan, serif;
+  }
+  
+  .crown-icon {
+    position: relative;
+    top: -4px;
+  }
+
+  .nav-link {
+    color: #ecf0f1;
+    &:hover, &:focus {
+        color: #fff; 
+    }
+  }
+
+  .dropdown-menu  > a {
+    color: #fff;
+    &:hover, &:focus {
+      color: #fff;
+      background-color: $culLightBlue;
+    }
+  }
+
+}
+
+
+// Customize the GeoBlacklight top nav-bar
+
+nav.topbar {
+  background-color: #eee !important;
+
+  .navbar-logo {
+    width: 312px;
+    background-size: 312px 45px;
+  }
+
+  .nav-item > .nav-link {
+    color:  #777;
+    &:hover, &:focus {
+      color: #333;
+    }
+  }
+
+}
+
+
+
+
+
+
+
