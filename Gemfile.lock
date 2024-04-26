@@ -479,7 +479,7 @@ DEPENDENCIES
   geoblacklight (~> 4.0)
   jbuilder (~> 2.7)
   jquery-rails
-  listen (~> 3.3)
+  listen
   mysql2
   net-ssh
   omniauth (~> 1.0)
