@@ -1,8 +1,8 @@
 
 
 server 'lito-rails-dev1.cul.columbia.edu', user: 'litoserv', roles: %w{app db web}
-set :deploy_to, '/opt/passenger/geodata4_dev'
-set :rvm_ruby_version, 'geodata4_dev'
+set :deploy_to, '/opt/passenger/geodata_dev'
+set :rvm_ruby_version, 'geodata_dev'
 
 
 # server-based syntax
