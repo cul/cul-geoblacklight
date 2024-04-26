@@ -16,11 +16,21 @@ group :geodata_dev do
   gem 'mysql2'
 end
 
-# debugging
 group :development do
+  # REPL debugging
   gem "better_errors"
   gem "binding_of_caller"
+
+  # Capistrano add ons for our environment
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-passenger', require: false
+
 end
+
+# ssh used during rake tasks
+gem 'net-ssh'
 
 # cron tasks
 gem "whenever"
