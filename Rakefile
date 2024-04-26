@@ -8,4 +8,5 @@ require File.join(Rails.root.to_s, 'config', 'initializers/aaa_load_app_config.r
 
 Rails.application.load_tasks
 
-require 'solr_wrapper/rake_task' unless Rails.env.production?
+# Why?  To support embedded Solr?  To support testing?
+# require 'solr_wrapper/rake_task' unless Rails.env.production?
