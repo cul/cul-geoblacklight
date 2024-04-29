@@ -27,7 +27,7 @@ group :development do
   gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
 
-  # gem 'capistrano-nvm', require: false
+  gem 'capistrano-nvm', require: false
 
 end
 

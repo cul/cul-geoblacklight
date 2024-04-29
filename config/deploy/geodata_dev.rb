@@ -8,9 +8,9 @@ set :rvm_ruby_version, 'geodata_dev'
 # set :nvm_node, 'v0.10.21'
 # set :nvm_map_bins, %w{node npm yarn}
 
-# set :nvm_type, :user
-# set :nvm_node, 'v16.10.0'
-# set :nvm_map_bins, %w{node npm yarn}
+set :nvm_type, :user
+set :nvm_node, 'geodata_dev'
+set :nvm_map_bins, %w{node npm yarn}
 
 # server-based syntax
 # ======================
