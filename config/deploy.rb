@@ -1,11 +1,11 @@
 # config valid for current version and patch releases of Capistrano
 lock "~> 3.18.1"
 
-set :application, "my_app_name"
-set :repo_url, "git@example.com:me/my_repo.git"
+set :application, "geodata"
+set :repo_url, 'git@github.com:cul/cul-geoblacklight.git'
 
 # Default branch is :master
-# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
 # set :deploy_to, "/var/www/my_app_name"
@@ -22,9 +22,11 @@ set :repo_url, "git@example.com:me/my_repo.git"
 
 # Default value for :linked_files is []
 # append :linked_files, "config/database.yml", 'config/master.key'
+append :linked_files, 'config/database.yml', 'config/secrets.yml', 'config/blacklight.yml', 'config/app_config.yml', 'config/cas.yml'
 
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "vendor", "storage"
+append :linked_dirs, 'log', 'tmp', 'public/metadata', 'public/opengeometadata'
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -37,3 +39,7 @@ set :repo_url, "git@example.com:me/my_repo.git"
 
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
+
+# restart passenger with 'touch tmp/restart.txt' instead of 'passenger-config restart-app'
+set :passenger_restart_with_touch, true
+
