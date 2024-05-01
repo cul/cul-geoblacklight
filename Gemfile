@@ -6,7 +6,8 @@ ruby "3.2.2"
 # ======== ======== ========
 
 # Authentication
-# gem 'omniauth', '~> 1.0'
+# Omniauth 2.x doesn't work with our Auth aparatus
+gem 'omniauth', '~> 1.0'
 # gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'rails-6'
 gem 'cul_omniauth'
 
@@ -26,7 +27,8 @@ group :development do
   gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
 
-  gem 'capistrano-nvm', require: false
+  # do we need this?
+  # gem 'capistrano-nvm', require: false
 
 end
 

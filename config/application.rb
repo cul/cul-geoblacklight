@@ -13,6 +13,9 @@ module Geodata
 
     # Columbia Authentication
     include Cul::Omniauth::FileConfigurable
+    
+    # Silence the Blacklight deprecation warnings coming out of the Blacklight gem
+    Deprecation.default_deprecation_behavior = :silence
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
