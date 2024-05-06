@@ -11,7 +11,7 @@ require 'net/ssh'
 # include Fgdc2Html
 
 require 'fgdc2aardvark'
-include Fgdc2Aardvark
+include Fgdc2aardvark
 
 require 'fgdc_helpers'
 include FgdcHelpers
