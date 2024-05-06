@@ -1,4 +1,4 @@
-module Fgdc2Aardvark
+module Fgdc2aardvark
 # Mapping from FGDC to Aardvark following:
 #   https://opengeometadata.org/aardvark-fgdc-iso-crosswalk/
 # Borrowing from:
