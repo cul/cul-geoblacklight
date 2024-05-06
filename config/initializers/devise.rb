@@ -314,3 +314,17 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
 end
+
+
+# https://github.com/heartcombo/devise/issues/5644#issuecomment-1780766510
+#
+# For those looking for an immediate fix, it is possible to monkey_patch around the issue. 
+# Add the following in your initializers/devise.rb:
+#
+class Devise::SecretKeyFinder
+  def find
+    @application.secret_key_base
+  end
+end
+
+
