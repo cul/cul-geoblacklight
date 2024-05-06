@@ -2,7 +2,7 @@
 
 // Set Header Logo
 //$logo-image: image_url('blacklight/logo.svg') !default;
-$logo-image: image_url('logo.svg') !default;
+$logo-image: image_url('logo.png') !default;
 
 .navbar-brand {  /* The main logo image for the Blacklight instance */
   @if $logo-image {
