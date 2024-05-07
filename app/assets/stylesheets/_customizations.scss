@@ -120,6 +120,12 @@ nav.topbar {
 
 }
 
-
-
+// The GeoBlacklight splash page is too roomy
+.geobl-homepage-masthead.jumbotron {
+  padding: 0px;
+  .d-flex.justify-content-center:first-child {
+    // border: 2px solid red;
+    display: none !important;
+  }
+}
 

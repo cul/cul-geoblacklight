@@ -186,7 +186,7 @@ namespace :opengeometadata do
       [doc].flatten.each do |record|
         begin
           # GEO-26 - Suppress restricted layers
-          if record['dc_rights_s'] == 'Restricted'
+          if record['dct_rights_sm'] == 'Restricted'
             restricted = restricted + 1
             next
           end
