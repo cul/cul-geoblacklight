@@ -286,7 +286,7 @@ module Fgdc2aardvark
     # Direct download file
     if onlink = doc.at_xpath("//idinfo/citation/citeinfo/onlink")
       if onlink.text.match /.columbia.edu/
-        dct_references['http://schema.org/downloadUrl'] = onlink.text
+        dct_references['http://schema.org/downloadUrl'] = onlink.text.strip
       end
     end
 

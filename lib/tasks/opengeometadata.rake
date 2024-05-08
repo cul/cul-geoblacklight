@@ -186,18 +186,19 @@ namespace :opengeometadata do
       [doc].flatten.each do |record|
         begin
           # GEO-26 - Suppress restricted layers
-          if record['dct_rights_sm'] == 'Restricted'
+          if (record['dct_rights_sm'] == 'Restricted') or 
+             (record['dct_accessRights_s'] == 'Restricted')
             restricted = restricted + 1
             next
           end
           
           # Skip out-of-bounds ENVELOPE() data
           if not valid_geometry?(record['locn_geometry'])
-            puts "ERROR: layer id #{record['layer_id_s']} solr_geom data NOT valid:  #{record['solr_geom']}"
+            puts "ERROR: layer id #{record['gbl_wxsIdentifier_s']} locn_geometry data NOT valid:  #{record['locn_geometry']}"
             next
           end
 
-          puts "Indexing #{record['layer_slug_s']}: #{path}" if ENV['DEBUG']
+          puts "Indexing #{record['id']}: #{path}" if ENV['DEBUG']
           solr.update params: { commitWithin: commit_within, overwrite: true },
                       data: [record].to_json,
                       headers: { 'Content-Type' => 'application/json' }
@@ -246,13 +247,14 @@ namespace :opengeometadata do
     solr = RSolr.connect url: Blacklight.connection_config[:url]
     puts "solr=#{solr}"
 
-    provenances = getRepoProvenances(repo)
+    providers = getRepoProviders(repo)
 
-    Array(provenances).each do |provenance|
+    Array(providers).each do |provider|
       stale = (ENV['STALE_DAYS'] || 21).to_i
-      query = "timestamp:[* TO NOW/DAY-#{stale}DAYS] AND dct_provenance_s:\"#{provenance}\""
+      # query = "timestamp:[* TO NOW/DAY-#{stale}DAYS] AND schema_provider_s:\"#{provider}\""
+      query = "timestamp:[* TO NOW-#{stale}DAY] AND schema_provider_s:\"#{provider}\""
 
-      puts "Pruning #{provenance}..."
+      puts "Pruning #{provider}..."
       puts "(#{query})"
       solr.delete_by_query query
     end
@@ -302,9 +304,9 @@ end
 # We'll hard-code this mapping for now, but we should really
 # extract possible provenance values from the supplied data.
 # 
-def getRepoProvenances(repo)
+def getRepoProviders(repo)
   case repo
-  when 'big-ten'
+  when 'geobtaa'
     # The "Big Ten" is an alliance of 14 [sic] institutions.
     # Only 9 of them contribute records to OpenGeoMetadata currently.
     [ 'Illinois', 'Indiana', 'Iowa', 'Maryland', 'Michigan',
@@ -328,7 +330,7 @@ def getRepoProvenances(repo)
   when 'edu.virginia'
     return 'UVa'
   else
-    raise "ERROR:  Unknown provenance for repo #{repo}"
+    raise "ERROR:  Unknown provider value for repo #{repo}"
   end
 end
 
