@@ -129,3 +129,14 @@ nav.topbar {
   }
 }
 
+// Can't figure out how to disable the SMS and Carto links,
+// so just hide them instead
+li.list-group-item.sms{
+  display: none;
+}
+li.list-group-item.carto{
+  display: none;
+}
+
+
+
